@@ -7,9 +7,6 @@ function M.emit(event, data)
   vim.api.nvim_exec_autocmds("User", { pattern = "Test" .. event, data = data or {} })
 end
 
-M.format_session_name = function(name)
-  return name:gsub("[\\/:]+", "%%")
-end
 
 ---@param ... table Tables to merge
 ---@return table merged_table
@@ -23,15 +20,6 @@ M.merge_deep = function(...)
   return vim.tbl_deep_extend("force", unpack({ ... }))
 end
 
----@param name string
-function M.encode(name)
-  local encoded_name = string.gsub(name, "([^%w %-%_%.%~])", function(c)
-    return string.format("_%02X", string.byte(c))
-  end)
-  encoded_name = string.gsub(encoded_name, " ", "+")
-
-  return encoded_name
-end
 
 function M.split(text, separator)
   local parts = {}
@@ -51,18 +39,6 @@ function M.split(text, separator)
   return parts
 end
 
----@param encoded_name string
-function M.decode(encoded_name)
-  local name = string.gsub(encoded_name, "+", " ")
-  logger.debug("decoding name %s", encoded_name)
-
-  name = string.gsub(name, "_(%x%x)", function(hex)
-    return string.char(tonumber(hex, 16))
-  end)
-  logger.debug("decoded name %s", name)
-
-  return name
-end
 
 function M.is_windows()
   return string.find(vim.loop.os_uname().sysname, "Windows") ~= nil

@@ -1,6 +1,7 @@
 local utils = require("smartsessions.utils")
+local system = require("smartsessions.utils.system")
 local logger = require("smartsessions.logger.logger")
-local fs = require("smartsessions.fs")
+local fs = require("smartsessions.utils.fs")
 local M = {}
 
 ---@return string|nil
@@ -25,12 +26,11 @@ function M.repo_path()
 end
 
 function M.is_git_repo()
-  local url = vim.trim(vim.fn.system("git rev-parse --is-inside-work-tree"))
-  if not url or url == "" or string.match(url, "^fatal:") then
-    return nil
-  end
-
-  return M.format_repo_host(url)
+  return system.call_shell("git rev-parse --is-inside-work-tree")
+  -- local url = vim.trim(vim.fn.system("git rev-parse --is-inside-work-tree"))
+  -- if not url or url == "" or string.match(url, "^fatal:") then
+  --   return nil
+  -- end
 end
 
 ---@return string|nil
@@ -74,13 +74,6 @@ end
 ---@param cb function
 function M.watch_branch_changes(cb)
   local watcher = utils.is_windows() and vim.uv.new_fs_poll() or vim.uv.new_fs_event()
-  -- local project_dir = M.repo_path()
-  -- if project_dir == nil then
-  --   logger.debug("Git repo not detected")
-  --   return
-  -- end
-  -- local git_head = fs.join_paths(project_dir, ".git", "HEAD")
-  -- local git_dir = vim.trim(vim.fn.system("git rev-parse --path-format=absolute --git-common-dir"))
   local git_dir = vim.trim(vim.fn.system("git rev-parse --path-format=absolute --git-dir"))
   local git_head = fs.join_paths(git_dir, "HEAD")
 
@@ -99,10 +92,9 @@ function M.watch_branch_changes(cb)
     return nil
   end
   local current_branch = read_head_branch()
-  logger.debug("Current branch %s", current_branch)
 
   if current_branch == nil then
-    logger.debug("Cannot find head file in git repository %s", git_head)
+    logger.debug("Cannot find a head file in the git repository %s", vim.fn.getcwd())
     return
   end
 
@@ -124,7 +116,6 @@ function M.watch_branch_changes(cb)
     )
   end
 
-  logger.debug("Watching %s git file", git_head)
   watch()
 end
 

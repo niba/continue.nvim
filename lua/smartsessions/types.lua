@@ -1,10 +1,13 @@
 
 ---@class SessionOpts
----@field session_path string
+---@field project_path string
 ---@field global_path string
 ---
 ---
 ---
 ---@class SmartSessions.Config
----@field useBranch boolean
----@field useGitHost boolean
+---@field use_git_branch boolean
+---@field use_git_host boolean
+---@field auto_restore boolean
+---@field auto_save boolean
+---@field auto_restore_on_branch_change boolean

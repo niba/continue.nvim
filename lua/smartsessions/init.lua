@@ -2,24 +2,20 @@ require("smartsessions.types")
 local logger = require("smartsessions.logger.logger")
 local consts = require("smartsessions.consts")
 local adapters = require("smartsessions.logger.adapters")
-local fs = require("smartsessions.fs")
+local fs = require("smartsessions.utils.fs")
 local git = require("smartsessions.utils.git")
 local sessions = require("smartsessions.sessions")
-local events = require("smartsessions.events")
+local events = require("smartsessions.utils.events")
 local config = require("smartsessions.config")
 
----@param git_branch? string
----@return SessionOpts
-local function get_dirs(git_branch)
-  local session_name = sessions.create_name({
-    useGitHost = config.options.useGitHost,
-    useBranchName = config.options.useBranch,
-  }, git_branch)
+---@param force_branch_name? string
+local function get_session_data(force_branch_name)
+  local opts = config.options
+  local session_name = sessions.get_name(opts, force_branch_name)
 
-  local data_dir = fs.get_data_dir()
-  local session_dir = fs.join_paths(data_dir, session_name)
+  local session_dir = fs.join_paths(opts.root_dir, session_name)
 
-  return { session_path = session_dir, global_path = data_dir }
+  return session_dir, session_name
 end
 
 ---@class core.session
@@ -32,7 +28,7 @@ function M.setup(cfg)
 
   logger.new({
     prefix = consts.PLUGIN_NAME,
-    level = vim.log.levels.DEBUG,
+    level = vim.log.levels.ERROR,
     adapters = {
       {
         name = adapters.ADAPTER_TYPES.notifier,
@@ -46,41 +42,58 @@ function M.setup(cfg)
   })
 
   sessions.configuration()
-  events.on_start(function()
-    vim.schedule(function()
-      local dirs = get_dirs()
-      -- WORK: refactor
-      M.load(dirs.session_path)
-      git.watch_branch_changes(function(old_branch_name)
-        print("branch changed %s", old_branch_name)
-        M.save(old_branch_name)
-        local new_dirs = get_dirs()
-        M.load(new_dirs.session_path)
+
+  if config.options.auto_restore then
+    events.on_start(function()
+      vim.schedule(function()
+        M.load(get_session_data())
+        if config.options.auto_restore_on_branch_change and git.is_git_repo() then
+          git.watch_branch_changes(function(old_branch_name)
+            M.save(get_session_data(old_branch_name))
+            M.load(get_session_data())
+          end)
+          logger.debug("Watching branch changes")
+        end
       end)
     end)
-  end)
-  events.on_end(function()
-    M.save()
-    logger.destroy()
-  end)
+  end
+
+  if config.options.auto_save then
+    events.on_end(function()
+      M.save(get_session_data())
+      logger.destroy()
+    end)
+  else
+    events.on_end(function()
+      logger.destroy()
+    end)
+  end
 end
 
----@param git_branch? string
-function M.save(git_branch)
-  local dirs = get_dirs(git_branch)
-
-  logger.debug("Saving session %s", dirs.session_path)
-  fs.create_dir(dirs.session_path)
-
-  sessions.save(dirs)
-  logger.debug("Saved session %s", dirs.session_path)
+---@param session_path string
+---@param session_name string
+function M.save(session_path, session_name)
+  logger.debug("Saving session for cwd [%s] with name [%s]", vim.fn.getcwd(), session_name)
+  fs.create_dir(session_path)
+  sessions.save(session_path)
+  logger.debug("Session [%s] has been saved", session_name)
 end
 
----@param session_dir string
-function M.load(session_dir)
-  logger.debug("Loading session %s", session_dir)
-  sessions.load({ session_path = session_dir, global_path = fs.get_data_dir() })
-  logger.debug("Loaded session %s", session_dir)
+---@param session_path string
+---@param session_name string
+function M.load(session_path, session_name)
+  if not fs.dir_exists(session_path) then
+    logger.debug(
+      "Loading session stopped. There is no data for cwd [%s] and session name [%s]",
+      vim.fn.getcwd(),
+      session_name
+    )
+    return
+  end
+
+  logger.debug("Loading session for cwd [%s] with name [%s]", vim.fn.getcwd(), session_name)
+  sessions.load(session_path)
+  logger.debug("Session %s has been loaded", session_name)
 end
 
 function M.list()
@@ -93,9 +106,7 @@ function M.list()
     end,
   }, function(choice)
     if choice then
-      M.load(choice.path)
-    else
-      print("No session selected")
+      M.load(choice.path, choice.name)
     end
   end)
 end
