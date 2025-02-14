@@ -1,4 +1,4 @@
-local logger_adapters = require("smartsessions.logger.adapters")
+local logger_adapters = require("continuum.logger.adapters")
 
 local reversed_levels = {}
 for k, v in pairs(vim.log.levels) do

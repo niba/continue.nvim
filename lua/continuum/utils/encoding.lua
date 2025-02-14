@@ -1,4 +1,4 @@
-local logger = require("smartsessions.logger.logger")
+local logger = require("continuum.logger.logger")
 local M = {}
 M.format_session_name = function(name)
   return name:gsub("[\\/:]+", "%%")

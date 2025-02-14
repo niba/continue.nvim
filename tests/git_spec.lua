@@ -1,4 +1,4 @@
-local git = require("smartsessions.utils.git")
+local git = require("continuum.utils.git")
 
 local T = MiniTest.new_set()
 
@@ -22,7 +22,7 @@ return T
 --   hooks = {
 --     pre_case = function()
 --       child.restart({ "-l", "tests/minit.lua" })
---       child.lua([[M = require('smartsessions.git')]])
+--       child.lua([[M = require('continuum.git')]])
 --     end,
 --     post_once = child.stop,
 --   },

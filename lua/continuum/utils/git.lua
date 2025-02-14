@@ -1,7 +1,7 @@
-local utils = require("smartsessions.utils")
-local system = require("smartsessions.utils.system")
-local logger = require("smartsessions.logger.logger")
-local fs = require("smartsessions.utils.fs")
+local utils = require("continuum.utils")
+local system = require("continuum.utils.system")
+local logger = require("continuum.logger.logger")
+local fs = require("continuum.utils.fs")
 local M = {}
 
 ---@return string|nil

@@ -1,4 +1,4 @@
-local logger = require("smartsessions.logger.logger")
+local logger = require("continuum.logger.logger")
 local M = {}
 
 -- @param event string
@@ -7,19 +7,39 @@ function M.emit(event, data)
   vim.api.nvim_exec_autocmds("User", { pattern = "Test" .. event, data = data or {} })
 end
 
-
 ---@param ... table Tables to merge
 ---@return table merged_table
 M.merge = function(...)
-  return vim.tbl_extend("force", unpack({ ... }))
+  local num_args = select("#", ...)
+  local args = {}
+  for i = 1, num_args do
+    local arg = select(i, ...)
+    if arg == nil then
+      args[i] = {}
+    else
+      args[i] = arg
+    end
+  end
+
+  return vim.tbl_extend("force", unpack(args))
 end
 
 ---@param ... table Tables to merge
 ---@return table merged_table
 M.merge_deep = function(...)
-  return vim.tbl_deep_extend("force", unpack({ ... }))
-end
+  local num_args = select("#", ...)
+  local args = {}
+  for i = 1, num_args do
+    local arg = select(i, ...)
+    if arg == nil then
+      args[i] = {}
+    else
+      args[i] = arg
+    end
+  end
 
+  return vim.tbl_deep_extend("force", unpack(args))
+end
 
 function M.split(text, separator)
   local parts = {}
@@ -38,7 +58,6 @@ function M.split(text, separator)
   end
   return parts
 end
-
 
 function M.is_windows()
   return string.find(vim.loop.os_uname().sysname, "Windows") ~= nil

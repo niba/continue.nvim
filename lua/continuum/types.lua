@@ -1,0 +1,34 @@
+
+---@class SessionOpts
+---@field project_path string
+---@field global_path string
+---
+---
+---
+---@class Continuum.Config
+---@field use_git_branch boolean
+---@field use_git_host boolean
+---@field auto_restore boolean
+---@field auto_save boolean
+---@field auto_restore_on_branch_change boolean
+---@field log_level integer
+---@field mappings Continuum.Mappings
+---
+---@class Continuum.Mappings
+---@field delete_session? table
+
+---@class Continuum.PickerData
+---@field base string
+---@field branch string
+---@field name string
+---@field path string
+---
+---@class Continuum.PickerModule
+---@field register function
+---@field enabled boolean
+---@field pick function
+---@field name string
+---
+---@class Continuum.PickerOpts
+---@field all? boolean
+---@field picker? "telescope" | "snacks" | "select"

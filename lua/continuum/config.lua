@@ -1,22 +1,26 @@
-local utils = require("smartsessions.utils")
-local logger = require("smartsessions.logger.logger")
-local git = require("smartsessions.utils.git")
-local fs = require("smartsessions.utils.fs")
-local consts = require("smartsessions.consts")
+local utils = require("continuum.utils")
+local logger = require("continuum.logger.logger")
+local git = require("continuum.utils.git")
+local fs = require("continuum.utils.fs")
+local consts = require("continuum.consts")
 
 local M = {}
 
----@class SmartSessions.Config
+---@class Continuum.Config
 M.default = {
   auto_restore = true,
   auto_save = true,
   auto_restore_on_branch_change = true,
   use_git_branch = true,
   use_git_host = true,
-  root_dir = fs.join_paths(vim.fn.stdpath("data"), consts.PLUGIN_NAME)
+  log_level = vim.log.levels.DEBUG,
+  root_dir = fs.join_paths(vim.fn.stdpath("data"), consts.PLUGIN_NAME),
+  mappings = {
+    delete_session = { "i", "<C-X>" },
+  },
 }
 
----@type SmartSessions.Config
+---@type Continuum.Config
 M.options = {}
 
 function M.setup(opts)
@@ -25,7 +29,7 @@ function M.setup(opts)
 
   local forced_options = {}
   if error then
-    if user_options.options.use_git_branch or user_options.options.use_git_host then
+    if user_options.use_git_branch or user_options.use_git_host then
       logger.debug("Can't use git features on non git repo: %s", vim.fn.getcwd())
     end
 

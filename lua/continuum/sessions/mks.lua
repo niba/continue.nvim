@@ -1,4 +1,4 @@
-local system = require("smartsessions.utils.system")
+local system = require("continuum.utils.system")
 local M = {}
 
 M.file = "data.vim"

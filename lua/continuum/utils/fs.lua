@@ -1,5 +1,5 @@
 local path = require("plenary.path")
-local logger = require("smartsessions.logger.logger")
+local logger = require("continuum.logger.logger")
 
 local M = {}
 
@@ -24,6 +24,27 @@ function M.create_dir(dir_path)
   end
 
   return false
+end
+
+---@param dir_path string
+---@param message? string
+function M.remove_dir(dir_path, message)
+  local dir = path:new(dir_path)
+
+  if not dir:exists() then
+    return false, "Directory does not exist"
+  end
+
+  local confirm = vim.fn.input((message or "Remove directory and all contents?") .. " (y/N): ")
+  if confirm:lower() ~= "y" then
+    return false, "Operation cancelled"
+  end
+
+  local success, err = pcall(function()
+    dir:rm({ recursive = true })
+  end)
+
+  return success, err
 end
 
 return M

@@ -1,4 +1,4 @@
-local utils = require("smartsessions.utils")
+local utils = require("continuum.utils")
 
 local T = MiniTest.new_set()
 

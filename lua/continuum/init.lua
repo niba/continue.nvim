@@ -1,12 +1,16 @@
-require("smartsessions.types")
-local logger = require("smartsessions.logger.logger")
-local consts = require("smartsessions.consts")
-local adapters = require("smartsessions.logger.adapters")
-local fs = require("smartsessions.utils.fs")
-local git = require("smartsessions.utils.git")
-local sessions = require("smartsessions.sessions")
-local events = require("smartsessions.utils.events")
-local config = require("smartsessions.config")
+require("continuum.types")
+local logger = require("continuum.logger.logger")
+local consts = require("continuum.consts")
+local adapters = require("continuum.logger.adapters")
+local fs = require("continuum.utils.fs")
+local git = require("continuum.utils.git")
+local sessions = require("continuum.sessions")
+local events = require("continuum.utils.events")
+local config = require("continuum.config")
+
+local telescope_picker = require("continuum.pickers.telescope")
+local snacks_picker = require("continuum.pickers.snacks")
+local select_picker = require("continuum.pickers.select")
 
 ---@param force_branch_name? string
 local function get_session_data(force_branch_name)
@@ -18,17 +22,26 @@ local function get_session_data(force_branch_name)
   return session_dir, session_name
 end
 
----@class core.session
+local pickers = {
+  telescope_picker,
+  snacks_picker,
+  select_picker,
+}
+
+local function init_pickers()
+  for _, picker in ipairs(pickers) do
+    picker.register()
+  end
+end
+
+---@class Continuum.core
 local M = {}
--- preserver
 
----@param cfg SmartSessions.Config
+---@param cfg Continuum.Config
 function M.setup(cfg)
-  config.setup(cfg)
-
   logger.new({
     prefix = consts.PLUGIN_NAME,
-    level = vim.log.levels.ERROR,
+    level = cfg.log_level or config.default.log_level,
     adapters = {
       {
         name = adapters.ADAPTER_TYPES.notifier,
@@ -41,12 +54,21 @@ function M.setup(cfg)
     },
   })
 
+  config.setup(cfg)
+
+  events.register_commands()
+
   sessions.configuration()
 
   if config.options.auto_restore then
     events.on_start(function()
+      if consts.PAGER_MODE then
+        logger.info("Detected pager mode, stopping auto restore")
+        return
+      end
       vim.schedule(function()
         M.load(get_session_data())
+        init_pickers()
         if config.options.auto_restore_on_branch_change and git.is_git_repo() then
           git.watch_branch_changes(function(old_branch_name)
             M.save(get_session_data(old_branch_name))
@@ -60,6 +82,10 @@ function M.setup(cfg)
 
   if config.options.auto_save then
     events.on_end(function()
+      if consts.PAGER_MODE then
+        logger.info("Detected pager mode, stopping auto save")
+        return
+      end
       M.save(get_session_data())
       logger.destroy()
     end)
@@ -69,6 +95,8 @@ function M.setup(cfg)
     end)
   end
 end
+
+function M.reset() end
 
 ---@param session_path string
 ---@param session_name string
@@ -96,21 +124,19 @@ function M.load(session_path, session_name)
   logger.debug("Session %s has been loaded", session_name)
 end
 
-function M.list()
-  local existing_sessions = sessions.list({ all = false })
-
-  vim.ui.select(existing_sessions, {
-    prompt = "Select a session:",
-    format_item = function(item)
-      return item.base .. " " .. item.branch
-    end,
-  }, function(choice)
-    if choice then
-      M.load(choice.path, choice.name)
-    end
-  end)
+---@param opts? Continuum.PickerOpts
+function M.search(opts)
+  vim
+    .iter(pickers)
+    :find(function(picker)
+      if opts and opts.picker then
+        return picker.name == opts.picker
+      end
+      return picker.enabled
+    end)
+    .pick(opts)
 end
 
--- :Lazy reload smartsessions
--- lua require("smartsessions").setup()
+-- :Lazy reload continuum
+-- lua require("continuum").setup()
 return M
