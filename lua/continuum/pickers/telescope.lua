@@ -1,19 +1,3 @@
-local sessions = require("continuum.sessions")
-local consts = require("continuum.consts")
-local config = require("continuum.config")
-local utils = require("continuum.utils")
-
-local function delete_action(prompt_buffer)
-  local action_state = require("telescope.actions.state")
-  local current_picker = action_state.get_current_picker(prompt_buffer)
-
-  current_picker:delete_selection(function(selection)
-    if selection then
-      return sessions.delete(selection.path, selection.value)
-    end
-  end)
-end
-
 ---@class Continuum.PickerModule
 local M = {}
 
@@ -32,51 +16,54 @@ function M.register()
   telescope.load_extension("continuum")
 end
 
+---@param opts Continuum.PickerOpts
 function M.pick(opts)
   local telescope_finders = require("telescope.finders")
 
-  opts = utils.merge_deep({
-    prompt_title = consts.PICKER_TITLE,
-  }, opts)
+  ---@param item Continuum.PickerItem
+  local entry_maker = function(item)
+    item.ordinal = item.text
+    item.display = item.text
 
-  ---@param session Continuum.PickerData
-  local entry_maker = function(session)
-    return {
-      ordinal = session.name,
-      value = session.name,
-      session = session,
-      path = session.path,
-      filename = session.name,
-      display = sessions.display(session),
-    }
+    return item
   end
 
   local finder_maker = function()
-    local existing_sessions = sessions.list(opts)
+    local data = opts.get_data()
 
     return telescope_finders.new_table({
-      results = existing_sessions,
+      results = data,
       entry_maker = entry_maker,
     })
+  end
+
+  local function delete_action(prompt_buffer)
+    local action_state = require("telescope.actions.state")
+    local current_picker = action_state.get_current_picker(prompt_buffer)
+
+    current_picker:delete_selection(function(selection)
+      if selection then
+        return opts.actions.delete.handler(selection)
+      end
+    end)
   end
 
   local telescope_conf = require("telescope.config").values
   local telescope_actions = require("telescope.actions")
   local telescope_state = require("telescope.actions.state")
-  local mappings = config.options.mappings
 
   require("telescope.pickers")
     .new(opts, {
       finder = finder_maker(),
-      previewer = false,
+      previewer = opts.preview,
       sorter = telescope_conf.file_sorter(opts),
       attach_mappings = function(prompt_bufnr, map)
-        map(mappings.delete_session[1], mappings.delete_session[2], delete_action)
+        map(opts.actions.delete.mode, opts.actions.delete.key, delete_action)
 
         telescope_actions.select_default:replace(function()
           telescope_actions.close(prompt_bufnr)
           local selection = telescope_state.get_selected_entry()
-          sessions.load(selection.path)
+          opts.actions.confirm(selection)
         end)
         return true
       end,

@@ -8,6 +8,7 @@ local consts = require("continuum.consts")
 local mks = require("continuum.sessions.mks")
 local shada = require("continuum.sessions.shada")
 local custom = require("continuum.sessions.custom")
+local picker = require("continuum.pickers.picker")
 
 local session_providers = {
   mks,
@@ -103,12 +104,6 @@ function M.list(opts)
           path = entry,
         })
       end
-      -- table.insert(sessions, {
-      --   base = decoded_name.project,
-      --   branch = decoded_name.branch,
-      --   name = dir_name,
-      --   path = entry,
-      -- })
     end
   end
 
@@ -154,22 +149,6 @@ end
 ---@param force_git_branch? string
 function M.get_name(opts, force_git_branch)
   local parts = {}
-  -- local used_git_host = false
-  --
-  -- if opts.use_git_host then
-  --   local git_host = git.repo_host()
-  --   if not git_host then
-  --     logger.warn("Cannot read git host in this repo, fallbacking to cwd")
-  --   else
-  --     table.insert(parts, encoding.encode(git_host))
-  --     used_git_host = true
-  --   end
-  -- end
-  --
-  -- if not used_git_host then
-  --   local root_path = git.repo_path() or vim.fn.getcwd()
-  --   table.insert(parts, encoding.encode(root_path))
-  -- end
 
   local base_name = M.get_base_name(opts)
   table.insert(parts, encoding.encode(base_name))
@@ -185,6 +164,42 @@ function M.get_name(opts, force_git_branch)
 
   local name = table.concat(parts, consts.SPECIAL_SEPARATOR)
   return name
+end
+
+---@param opts? Continuum.SearchOpts
+function M.search(opts)
+  picker.pick({
+    title = consts.PICKER_TITLE,
+    preview = false,
+    get_data = function()
+      local data = M.list(opts)
+
+      return vim
+        .iter(data)
+        :map(function(session)
+          return {
+            text = M.display(session),
+            value = session,
+            path = session.path,
+          }
+        end)
+        :totable()
+    end,
+    actions = {
+      confirm = {
+        handler = function(item)
+          M.load(item.path)
+        end,
+      },
+      delete = {
+        handler = function(item)
+          M.delete(item.path, item.value.name)
+        end,
+        mode = config.options.mappings.delete_session[1],
+        key = config.options.mappings.delete_session[2],
+      },
+    },
+  }, opts and opts.picker or nil)
 end
 
 return M

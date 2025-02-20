@@ -1,7 +1,3 @@
-local sessions = require("continuum.sessions")
-local config = require("continuum.config")
-local consts = require("continuum.consts")
-
 ---@class Continuum.PickerModule
 local M = {}
 
@@ -20,34 +16,23 @@ function M.register()
   M.enabled = true
 end
 
+---@param opts Continuum.PickerOpts
 function M.pick(opts)
-  local mappings = config.options.mappings
+  local layout = opts.layout and opts.layout
+    or opts.preview == false and { preset = "select" }
+    or nil
 
   Snacks.picker.pick({
-    title = consts.PICKER_TITLE,
-    layout = {
-      preset = "select",
-    },
+    title = opts.title,
+    layout = layout,
     finder = function()
-      local data = sessions.list(opts)
-
-      return vim
-        .iter(data)
-        :map(function(session)
-          return {
-            text = sessions.display(session),
-            session = session,
-            path = session.path,
-            name = session.name,
-          }
-        end)
-        :totable()
+      return opts.get_data()
     end,
     format = "text",
     win = {
       input = {
         keys = {
-          [mappings.delete_session[2]] = { "delete", mode = mappings.delete_session[1] },
+          [opts.actions.delete.key] = { "delete", mode = opts.actions.delete.mode },
           ["dd"] = "delete",
         },
       },
@@ -61,12 +46,12 @@ function M.pick(opts)
       confirm = function(picker, item)
         picker:close()
         vim.schedule(function()
-          sessions.load(item.path)
+          opts.actions.confirm.handler(item)
         end)
       end,
       delete = function(picker, item)
         vim.schedule(function()
-          sessions.delete(item.path, item.name)
+          opts.actions.delete.handler(item)
           picker:find()
         end)
       end,

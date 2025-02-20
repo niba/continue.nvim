@@ -1,6 +1,3 @@
-local sessions = require("continuum.sessions")
-local consts = require("continuum.consts")
-
 ---@class Continuum.PickerModule
 local M = {}
 
@@ -11,17 +8,18 @@ function M.register()
   M.enabled = true
 end
 
+---@param opts Continuum.PickerOpts
 function M.pick(opts)
-  local existing_sessions = sessions.list(opts)
+  local data = opts.get_data()
 
-  vim.ui.select(existing_sessions, {
-    prompt = consts.PICKER_TITLE,
+  vim.ui.select(data, {
+    prompt = opts.title,
     format_item = function(item)
-      return sessions.display(item)
+      return item.text
     end,
   }, function(choice)
     if choice then
-      sessions.load(choice.path)
+      opts.actions.confirm.handler(choice)
     end
   end)
 end

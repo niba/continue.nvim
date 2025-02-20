@@ -8,9 +8,7 @@ local sessions = require("continuum.sessions")
 local events = require("continuum.utils.events")
 local config = require("continuum.config")
 
-local telescope_picker = require("continuum.pickers.telescope")
-local snacks_picker = require("continuum.pickers.snacks")
-local select_picker = require("continuum.pickers.select")
+local picker = require("continuum.pickers.picker")
 
 ---@param force_branch_name? string
 local function get_session_data(force_branch_name)
@@ -20,18 +18,6 @@ local function get_session_data(force_branch_name)
   local session_dir = fs.join_paths(opts.root_dir, session_name)
 
   return session_dir, session_name
-end
-
-local pickers = {
-  telescope_picker,
-  snacks_picker,
-  select_picker,
-}
-
-local function init_pickers()
-  for _, picker in ipairs(pickers) do
-    picker.register()
-  end
 end
 
 ---@class Continuum.core
@@ -68,7 +54,9 @@ function M.setup(cfg)
       end
       vim.schedule(function()
         M.load(get_session_data())
-        init_pickers()
+
+        picker.init_pickers()
+
         if config.options.auto_restore_on_branch_change and git.is_git_repo() then
           git.watch_branch_changes(function(old_branch_name)
             M.save(get_session_data(old_branch_name))
@@ -124,17 +112,9 @@ function M.load(session_path, session_name)
   logger.debug("Session %s has been loaded", session_name)
 end
 
----@param opts? Continuum.PickerOpts
+---@param opts? Continuum.SearchOpts
 function M.search(opts)
-  vim
-    .iter(pickers)
-    :find(function(picker)
-      if opts and opts.picker then
-        return picker.name == opts.picker
-      end
-      return picker.enabled
-    end)
-    .pick(opts)
+  sessions.search(opts.picker)
 end
 
 -- :Lazy reload continuum
