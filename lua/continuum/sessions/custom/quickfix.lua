@@ -1,3 +1,4 @@
+local logger = require("continuum.logger.logger")
 ---@class Continuum.CustomHandler
 local M = {}
 
@@ -41,12 +42,15 @@ function M.save()
 
   return serializable_list
 end
+
 function M.load(data)
   if not data then
+    logger.info("No quickfix data")
     return false
   end
 
   if not data.items then
+    logger.info("No quickfix data")
     return false
   end
 

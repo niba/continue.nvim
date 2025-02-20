@@ -66,35 +66,67 @@ function M.save(session_opts)
 
   for handler_name, handler in pairs(handlers) do
     if handler.save then
-      handlers_data[handler_name] = handler.save({
-        dir = handler.config and handler.config.needs_dir and get_handler_dir(
-          session_opts,
-          handler
-        ) or nil,
-      })
+      local success, handler_data = pcall(function()
+        return handler.save({
+          dir = handler.config and handler.config.needs_dir and get_handler_dir(
+            session_opts,
+            handler
+          ) or nil,
+        })
+      end)
+      if not success then
+        logger.error("Error while saving custom session data: %s", handler_data)
+      end
+      if success then
+        local can_be_json, encoding_result = pcall(function()
+          vim.json.encode(handler_data)
+        end)
+
+        if not can_be_json then
+          logger.error(
+            "Data encoded by handler %s cannot be saved: %s",
+            handler.id,
+            encoding_result
+          )
+        else
+          handlers_data[handler_name] = handler_data
+        end
+      end
     end
   end
 
+  logger.info("writin custom data %s", handlers_data)
   return write_json_file(session_opts.project_path, handlers_data)
 end
 
 ---@param session_opts SessionOpts
 function M.load(session_opts)
-  local data = read_json_file(session_opts.project_path)
+  local success, data = pcall(function()
+    return read_json_file(session_opts.project_path)
+  end)
+
+  if not success then
+    logger.error("Custom session data got corrupted. Can't load it")
+    return
+  end
 
   if data == nil then
+    logger.info("No data for custom session")
     return
   end
 
   for key, value in pairs(data) do
     local handler = handlers[key]
     if handler and handler.load then
-      handler.load(value, {
-        dir = handler.config and handler.config.needs_dir and get_handler_dir(
-          session_opts,
-          handler
-        ) or nil,
-      })
+      logger.info("Calling custom %s to load data", handler.id)
+      pcall(function()
+        handler.load(value, {
+          dir = handler.config and handler.config.needs_dir and get_handler_dir(
+            session_opts,
+            handler
+          ) or nil,
+        })
+      end)
     end
   end
 end

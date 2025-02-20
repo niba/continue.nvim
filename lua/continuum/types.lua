@@ -3,6 +3,7 @@
 ---@field project_path string
 ---@field global_path string
 ---
+---@class Custom
 ---
 ---
 ---@class Continuum.Config
@@ -16,19 +17,6 @@
 ---
 ---@class Continuum.Mappings
 ---@field delete_session? table
----
----@class Continuum.CustomHandlerConfig
----@field needs_dir? boolean
----
----@class Continuum.CustomHandlerOpts
----@field dir? string
----
----@class Continuum.CustomHandler
----@field load function
----@field save function
----@field init function
----@field id string
----@field config Continuum.CustomHandlerConfig
 
 ---@class Continuum.PickerData
 ---@field base string
@@ -45,3 +33,9 @@
 ---@class Continuum.SearchOpts
 ---@field all? boolean
 ---@field picker? "telescope" | "snacks" | "select"
+
+---@class Continuum.CustomHandler
+---@field load function
+---@field save function
+---@field init function
+---@field id string
