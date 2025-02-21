@@ -11,7 +11,7 @@ function M.register_commands()
     group = augroup,
     pattern = "*",
     callback = function()
-      logger.info("Detected pager mode, stopping auto save")
+      logger.debug("Detected pager mode, stopping auto save")
       consts.enable_pager_mode()
     end,
   })

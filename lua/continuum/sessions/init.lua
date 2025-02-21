@@ -43,10 +43,11 @@ function M.save(session_path)
   end
 end
 
-function M.configuration()
+---@param opts Continuum.Config
+function M.init(opts)
   for _, provider in ipairs(session_providers) do
-    if type(provider.configuration) == "function" then
-      provider.configuration()
+    if type(provider.init) == "function" then
+      provider.init(opts)
     end
   end
 end

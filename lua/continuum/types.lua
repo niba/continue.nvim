@@ -3,8 +3,9 @@
 ---@field project_path string
 ---@field global_path string
 ---
----@class Custom
----
+---@class Continuum.BuiltinCustom
+---@field qf boolean
+---@field codecompanion boolean
 ---
 ---@class Continuum.Config
 ---@field use_git_branch boolean
@@ -14,6 +15,8 @@
 ---@field auto_restore_on_branch_change boolean
 ---@field log_level integer
 ---@field mappings Continuum.Mappings
+---@field custom_builtin Continuum.BuiltinCustom
+---@field custom table<Continuum.CustomHandler>
 ---
 ---@class Continuum.Mappings
 ---@field delete_session? table
@@ -36,6 +39,7 @@
 
 ---@class Continuum.CustomHandler
 ---@field load function
----@field save function
+---@field save function 
 ---@field init function
+---@field config any 
 ---@field id string

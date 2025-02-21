@@ -47,4 +47,30 @@ function M.remove_dir(dir_path, message)
   return success, err
 end
 
+---@param file_path string
+---@param data any
+---@return boolean
+function M.write_json_file(file_path, data)
+  local file = io.open(file_path, "w")
+  if not file then
+    return false
+  end
+  local content = vim.json.encode(data)
+  file:write(content)
+  file:close()
+  return true
+end
+
+---@param file_path string
+---@return any
+function M.read_json_file(file_path)
+  local file = io.open(file_path, "r")
+  if not file then
+    return nil
+  end
+  local content = file:read("*a")
+  file:close()
+  return vim.json.decode(content)
+end
+
 return M

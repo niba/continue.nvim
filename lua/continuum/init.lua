@@ -7,6 +7,7 @@ local git = require("continuum.utils.git")
 local sessions = require("continuum.sessions")
 local events = require("continuum.utils.events")
 local config = require("continuum.config")
+local utils = require("continuum.utils")
 
 local picker = require("continuum.pickers.picker")
 
@@ -40,11 +41,15 @@ function M.setup(cfg)
     },
   })
 
-  config.setup(cfg)
-
   events.register_commands()
 
-  sessions.configuration()
+  config.setup(cfg)
+
+  sessions.init(config.options)
+
+  if utils.has_file_as_argument() then
+    consts.enable_pager_mode()
+  end
 
   if config.options.auto_restore then
     events.on_start(function()

@@ -18,6 +18,11 @@ M.default = {
   mappings = {
     delete_session = { "i", "<C-X>" },
   },
+  custom_builtin = {
+    qf = true,
+    codecompanion = true,
+  },
+  custom = {},
 }
 
 ---@type Continuum.Config

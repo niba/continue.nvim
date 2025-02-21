@@ -63,4 +63,18 @@ function M.is_windows()
   return string.find(vim.loop.os_uname().sysname, "Windows") ~= nil
 end
 
+function M.has_file_as_argument()
+  local args = vim.fn.argv()
+
+  for _, arg in ipairs(args) do
+    if not arg:match("^[+-]") and arg ~= "-" then
+      if vim.fn.isdirectory(arg) == 0 then
+        return true
+      end
+    end
+  end
+
+  return false
+end
+
 return M

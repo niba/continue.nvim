@@ -1,46 +1,15 @@
 local logger = require("continuum.logger.logger")
 local fs = require("continuum.utils.fs")
 local custom_qf = require("continuum.sessions.custom.quickfix")
-local custom_cc = require("continuum.sessions.custom.code_companion")
+local custom_cc = require("continuum.sessions.custom.codecompanion")
 local M = {}
 
 M.file = "data.json"
 
-local function write_json_file(file_path, data)
-  local file = io.open(file_path, "w")
-  if not file then
-    return false
-  end
-  local content = vim.json.encode(data)
-  file:write(content)
-  file:close()
-  return true
-end
-
----@return table
-local function read_json_file(file_path)
-  local file = io.open(file_path, "r")
-  if not file then
-    return nil
-  end
-  local content = file:read("*a")
-  file:close()
-  return vim.json.decode(content)
-end
-
----@param session_opts SessionOpts
----@param handler Continuum.CustomHandler
-local function get_handler_dir(session_opts, handler)
-  local handle_dir = fs.join_paths(
-    vim.fn.fnamemodify(session_opts.project_path, ":h"),
-    string.format("__custom_handler_data_%s", handler.id)
-  )
-  if handler.config and handler.config.needs_dir then
-    fs.create_dir(handle_dir)
-  end
-
-  return handle_dir
-end
+local builtin = {
+  qf = custom_qf,
+  codecompanion = custom_cc,
+}
 
 ---@type table<string, Continuum.CustomHandler>
 local handlers = {}
@@ -55,9 +24,13 @@ function M.register(handler)
   }
 end
 
-function M.configuration(opts)
-  M.register(custom_qf)
-  M.register(custom_cc)
+---@param opts Continuum.Config
+function M.init(opts)
+  for key, value in pairs(opts.custom_builtin or {}) do
+    if value then
+      M.register(builtin[key])
+    end
+  end
 end
 
 ---@param session_opts SessionOpts
@@ -67,12 +40,7 @@ function M.save(session_opts)
   for handler_name, handler in pairs(handlers) do
     if handler.save then
       local success, handler_data = pcall(function()
-        return handler.save({
-          dir = handler.config and handler.config.needs_dir and get_handler_dir(
-            session_opts,
-            handler
-          ) or nil,
-        })
+        return handler.save()
       end)
       if not success then
         logger.error("Error while saving custom session data: %s", handler_data)
@@ -95,14 +63,13 @@ function M.save(session_opts)
     end
   end
 
-  logger.info("writin custom data %s", handlers_data)
-  return write_json_file(session_opts.project_path, handlers_data)
+  return fs.write_json_file(session_opts.project_path, handlers_data)
 end
 
 ---@param session_opts SessionOpts
 function M.load(session_opts)
   local success, data = pcall(function()
-    return read_json_file(session_opts.project_path)
+    return fs.read_json_file(session_opts.project_path)
   end)
 
   if not success then
@@ -118,14 +85,8 @@ function M.load(session_opts)
   for key, value in pairs(data) do
     local handler = handlers[key]
     if handler and handler.load then
-      logger.info("Calling custom %s to load data", handler.id)
       pcall(function()
-        handler.load(value, {
-          dir = handler.config and handler.config.needs_dir and get_handler_dir(
-            session_opts,
-            handler
-          ) or nil,
-        })
+        handler.load(value)
       end)
     end
   end

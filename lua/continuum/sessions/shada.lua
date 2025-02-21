@@ -3,7 +3,7 @@ local M = {}
 
 M.file = "data.shada"
 
-function M.configuration()
+function M.init()
   vim.o.shada = ""
 end
 
