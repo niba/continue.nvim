@@ -5,6 +5,8 @@ M.PLUGIN_NAME = "continuum"
 M.SPECIAL_SEPARATOR = "__"
 M.PAGER_MODE = false
 M.PICKER_TITLE = "Sessions"
+M.IS_REPO = false
+M.PROCESSING_IS_REPO = false
 
 function M.enable_pager_mode()
   M.PAGER_MODE = true

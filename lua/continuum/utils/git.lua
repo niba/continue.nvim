@@ -25,12 +25,8 @@ function M.repo_path()
   return git_root
 end
 
-function M.is_git_repo()
-  return system.call_shell("git rev-parse --is-inside-work-tree")
-  -- local url = vim.trim(vim.fn.system("git rev-parse --is-inside-work-tree"))
-  -- if not url or url == "" or string.match(url, "^fatal:") then
-  --   return nil
-  -- end
+function M.is_git_repo(cb)
+  system.call_shell_cb({ "git", "rev-parse", "--is-inside-work-tree" }, cb)
 end
 
 ---@param remote_name string

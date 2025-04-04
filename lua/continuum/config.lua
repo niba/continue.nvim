@@ -28,7 +28,7 @@ M.default = {
   },
   custom_builtin = {
     qf = true,
-    codecompanion = true,
+    codecompanion = false,
   },
   custom = {},
 }
@@ -37,21 +37,26 @@ M.default = {
 M.options = {}
 
 function M.setup(opts)
-  local user_options = utils.merge_deep({}, M.default, opts)
-  local is_repo, error = git.is_git_repo()
+  M.options = utils.merge_deep({}, M.default, opts)
 
-  local forced_options = {}
-  if error then
-    if user_options.use_git_branch or user_options.use_git_host then
-      logger.debug("Can't use git features on non git repo: %s", vim.fn.getcwd())
+  consts.PROCESSING_IS_REPO = true
+  git.is_git_repo(function(res, err)
+    local is_repo = err == nil
+    consts.IS_REPO = is_repo
+    consts.PROCESSING_IS_REPO = false
+
+    local forced_options = {}
+    if not is_repo then
+      if M.options.use_git_branch or M.options.use_git_host then
+        logger.debug("Can't use git features on non git repo: %s", vim.fn.getcwd())
+      end
+
+      forced_options.use_git_branch = false
+      forced_options.use_git_host = false
+      forced_options.auto_restore_on_branch_change = false
+      M.options = utils.merge_deep(M.options, forced_options)
     end
-
-    forced_options.use_git_branch = false
-    forced_options.use_git_host = false
-    forced_options.auto_restore_on_branch_change = false
-  end
-
-  M.options = utils.merge_deep(user_options, forced_options)
+  end)
 
   fs.create_dir(M.options.root_dir)
 end

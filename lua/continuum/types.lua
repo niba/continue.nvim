@@ -49,6 +49,7 @@
 ---@class Continuum.CustomHandler
 ---@field load function
 ---@field save function
+---@field condition function
 ---@field init function
 ---@field config any
 ---@field id string

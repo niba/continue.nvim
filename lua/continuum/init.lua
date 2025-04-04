@@ -72,19 +72,20 @@ function M.setup(cfg)
   end
 
   events.on_start(function()
-    picker.init_pickers()
+    vim.wait(200, function()
+      return not consts.PROCESSING_IS_REPO
+    end, 10)
 
     if config.options.auto_restore then
       if consts.get_pager_mode() then
-        -- TODO: change to debug later
-        logger.info("Detected pager mode, stopping auto restore")
+        logger.debug("Detected pager mode, stopping auto restore")
         return
       end
 
       M.load()
     end
 
-    if config.options.auto_restore_on_branch_change and git.is_git_repo() then
+    if config.options.auto_restore_on_branch_change and consts.IS_REPO then
       git.watch_branch_changes(function(old_branch_name)
         M.save(sessions.get_name(config.options, old_branch_name))
         M.load()
@@ -164,7 +165,12 @@ end
 
 ---@param opts? Continuum.SearchOpts
 function M.search(opts)
-  sessions.search(opts and opts.picker or "snacks")
+  picker.init_pickers()
+
+  sessions.search({
+    all = opts and opts.all or false,
+    picker = opts and opts.picker or config.options.picker,
+  })
 end
 
 return M

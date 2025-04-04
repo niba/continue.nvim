@@ -51,7 +51,13 @@ function M.pick(opts, force_picker)
     .pick(opts)
 end
 
+M.initialized = false
+
 function M.init_pickers()
+  if M.initialized then
+    return
+  end
+
   vim.iter(vim.tbl_values(pickers)):each(function(picker)
     picker.register()
   end)

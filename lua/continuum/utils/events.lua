@@ -61,13 +61,10 @@ function M.on_cwd_change(callbacks)
 end
 
 function M.on_start(fn)
-  -- if we dont defer then lsp attaches to all buffers and nvim is very sluggish
   local defer_fn = function()
-    vim.defer_fn(function()
-      vim.schedule(function()
-        fn()
-      end)
-    end, 100)
+    vim.schedule(function()
+      fn()
+    end)
   end
 
   if ecosystem.has_lazy_manager() then
