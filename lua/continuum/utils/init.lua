@@ -60,7 +60,7 @@ function M.split(text, separator)
 end
 
 function M.is_windows()
-  return string.find(vim.loop.os_uname().sysname, "Windows") ~= nil
+  return string.find(vim.uv.os_uname().sysname, "Windows") ~= nil
 end
 
 function M.has_file_as_argument()
@@ -75,6 +75,22 @@ function M.has_file_as_argument()
   end
 
   return false
+end
+
+function M.buffers_count()
+  local count = 0
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if
+      vim.api.nvim_buf_is_loaded(buf)
+      and vim.api.nvim_buf_is_valid(buf)
+      and vim.bo[buf].buftype ~= "nofile"
+    then
+      count = count + 1
+    end
+  end
+
+  return count
+
 end
 
 return M

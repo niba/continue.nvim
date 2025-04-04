@@ -13,6 +13,10 @@ local function is_quickfix_open()
   return false
 end
 
+function M.condition()
+  return true
+end
+
 function M.save()
   if not is_quickfix_open() then
     return nil

@@ -86,7 +86,7 @@ function Logger.log(level, msg, ...)
   end
 
   for _, adapter in ipairs(Logger.adapters) do
-    if Logger.allowance_level <= adapter.level then
+    if Logger.allowance_level <= adapter.level and adapter.level <= level then
       adapter.adapter.write(formatter(level, msg, ...), level)
     end
   end

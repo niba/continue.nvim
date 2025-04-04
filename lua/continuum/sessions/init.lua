@@ -26,20 +26,24 @@ function M.load(session_path)
   vim.cmd([[silent! %bw!]])
 
   for _, provider in ipairs(session_providers) do
-    provider.load({
-      project_path = fs.join_paths(session_path, provider.file),
-      global_path = fs.join_paths(config.options.root_dir, provider.file),
-    })
+    pcall(function()
+      provider.load({
+        project_path = fs.join_paths(session_path, provider.file),
+        global_path = fs.join_paths(config.options.root_dir, provider.file),
+      })
+    end)
   end
 end
 
 ---@param session_path string
 function M.save(session_path)
   for _, provider in ipairs(session_providers) do
-    provider.save({
-      project_path = fs.join_paths(session_path, provider.file),
-      global_path = fs.join_paths(config.options.root_dir, provider.file),
-    })
+    pcall(function()
+      provider.save({
+        project_path = fs.join_paths(session_path, provider.file),
+        global_path = fs.join_paths(config.options.root_dir, provider.file),
+      })
+    end)
   end
 end
 

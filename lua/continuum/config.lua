@@ -10,11 +10,18 @@ local M = {}
 M.default = {
   auto_restore = true,
   auto_save = true,
-  auto_restore_on_branch_change = true,
+  auto_save_min_buffer = 1,
+  auto_restore_on_branch_change = false,
+  react_on_cwd_change = false,
   use_git_branch = true,
   use_git_host = true,
-  log_level = vim.log.levels.TRACE,
+  log_level = vim.log.levels.DEBUG,
   root_dir = fs.join_paths(vim.fn.stdpath("data"), consts.PLUGIN_NAME),
+  picker = "snacks",
+  shada = {
+    project = "'100,<50,s10,h,:0,/1000",
+    global = "!,'0,<0,s10,h,:1000,/0,f0",
+  },
   mappings = {
     delete_session = { "i", "<C-X>" },
   },

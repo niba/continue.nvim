@@ -8,18 +8,26 @@
 ---@field codecompanion boolean
 ---
 ---@class Continuum.Config
----@field use_git_branch boolean
----@field use_git_host boolean
----@field auto_restore boolean
----@field auto_save boolean
----@field auto_restore_on_branch_change boolean
----@field log_level integer
----@field mappings Continuum.Mappings
----@field custom_builtin Continuum.BuiltinCustom
----@field custom table<Continuum.CustomHandler>
+---@field use_git_branch? boolean
+---@field use_git_host? boolean
+---@field auto_restore? boolean
+---@field react_on_cwd_change? boolean
+---@field auto_save? boolean
+---@field auto_save_min_buffer? number
+---@field auto_restore_on_branch_change? boolean
+---@field log_level? integer
+---@field picker? "telescope" | "snacks" | "select"
+---@field mappings? Continuum.Config.Mappings
+---@field custom_builtin? Continuum.BuiltinCustom
+---@field custom? table<Continuum.CustomHandler>
+---@field shada? Continuum.Config.Shada
+---@field root_dir? string
 ---
----@class Continuum.Mappings
+---@class Continuum.Config.Mappings
 ---@field delete_session? table
+---@class Continuum.Config.Shada
+---@field project? string
+---@field global? string
 
 ---@class Continuum.PickerData
 ---@field base string
@@ -39,7 +47,12 @@
 
 ---@class Continuum.CustomHandler
 ---@field load function
----@field save function 
+---@field save function
 ---@field init function
----@field config any 
+---@field config any
 ---@field id string
+---
+---@class Continuum.OnCwdChange
+---@field before_change function
+---@field after_change function
+---@field condition function

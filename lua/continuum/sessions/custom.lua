@@ -27,8 +27,13 @@ end
 ---@param opts Continuum.Config
 function M.init(opts)
   for key, value in pairs(opts.custom_builtin or {}) do
-    if value then
+    if value and builtin[key].condition() then
       M.register(builtin[key])
+    end
+  end
+  for key, value in pairs(opts.custom) do
+    if value then
+      M.register(value())
     end
   end
 end
