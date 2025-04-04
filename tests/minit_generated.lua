@@ -12,11 +12,17 @@ require("lazy.minit").setup({
     {
       dir = plugin_dir,
       name = "continuum",
+      lazy = false,
       config = true,
       opts = {
   auto_restore = false,
   auto_restore_on_branch_change = false,
   auto_save = false,
+  custom_builtin = {
+    codecompanion = false,
+    qf = false
+  },
+  react_on_cwd_change = false,
   root_dir = "/Users/niba/Documents/Projects/neovim/continuum/tests/.sessions/"
 },
     },

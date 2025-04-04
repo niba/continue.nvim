@@ -72,6 +72,8 @@ function M.setup(cfg)
   end
 
   events.on_start(function()
+    picker.init_pickers()
+
     if config.options.auto_restore then
       if consts.get_pager_mode() then
         -- TODO: change to debug later
@@ -81,8 +83,6 @@ function M.setup(cfg)
 
       M.load()
     end
-
-    picker.init_pickers()
 
     if config.options.auto_restore_on_branch_change and git.is_git_repo() then
       git.watch_branch_changes(function(old_branch_name)

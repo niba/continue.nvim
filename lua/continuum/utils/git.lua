@@ -33,9 +33,10 @@ function M.is_git_repo()
   -- end
 end
 
+---@param remote_name string
 ---@return string|nil
-function M.repo_host()
-  local url = vim.trim(vim.fn.system("git config --get remote.origin.url"))
+function M.repo_host(remote_name)
+  local url = vim.trim(vim.fn.system(string.format("git config --get remote.%s.url", remote_name)))
   if not url or url == "" or string.match(url, "^fatal:") then
     return nil
   end

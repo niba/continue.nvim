@@ -9,9 +9,6 @@ local child, manager = h.new_child_neovim({
 
 local T = MiniTest.new_set({
   hooks = {
-    -- pre_once = function()
-    --   manager.start()
-    -- end,
     pre_case = function()
       h.clean_sessions_data()
       manager.restart()
@@ -126,6 +123,34 @@ T["should load sessions data"] = function()
 
   buffer_name = child.lua_func(function()
     require("continuum").load()
+    local current_buf = vim.api.nvim_get_current_buf()
+    local file_path = vim.api.nvim_buf_get_name(current_buf)
+    local filename = vim.fn.fnamemodify(file_path, ":t")
+    return filename
+  end)
+
+  MiniTest.expect.equality(buffer_name, "file.txt")
+end
+
+T["should auto restore sessions"] = function()
+  local buffer_name = child.lua_func(function()
+    vim.cmd("edit file.txt")
+    require("continuum").save()
+    local current_buf = vim.api.nvim_get_current_buf()
+    local file_path = vim.api.nvim_buf_get_name(current_buf)
+    local filename = vim.fn.fnamemodify(file_path, ":t")
+    return filename
+  end)
+
+  MiniTest.expect.equality(buffer_name, "file.txt")
+
+  manager.restart({
+    auto_restore = true,
+  })
+
+  -- give time to restore
+  vim.loop.sleep(1000)
+  buffer_name = child.lua_func(function()
     local current_buf = vim.api.nvim_get_current_buf()
     local file_path = vim.api.nvim_buf_get_name(current_buf)
     local filename = vim.fn.fnamemodify(file_path, ":t")

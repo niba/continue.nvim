@@ -22,6 +22,7 @@
 ---@field custom? table<Continuum.CustomHandler>
 ---@field shada? Continuum.Config.Shada
 ---@field root_dir? string
+---@field git_remote? string | fun(cwd: string): string
 ---
 ---@class Continuum.Config.Mappings
 ---@field delete_session? table

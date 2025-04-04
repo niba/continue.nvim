@@ -134,11 +134,18 @@ function M.display(data)
   return data.base
 end
 
+local function get_remote()
+  if type(config.options.git_remote) ~= "string" then
+    config.options.git_remote(vim.uv.cwd())
+  end
+  return config.options.git_remote
+end
+
 ---@param opts { use_git_host?: boolean }
 ---@return string
 function M.get_base_name(opts)
   if opts.use_git_host then
-    local git_host = git.repo_host()
+    local git_host = git.repo_host(get_remote())
     if not git_host then
       logger.warn("Cannot read git host in this repo, fallbacking to cwd")
     else

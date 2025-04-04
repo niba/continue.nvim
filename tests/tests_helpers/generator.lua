@@ -14,6 +14,7 @@ require("lazy.minit").setup({
     {
       dir = plugin_dir,
       name = "continuum",
+      lazy = false,
       config = true,
       opts = {{opts}},
     },

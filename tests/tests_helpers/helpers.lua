@@ -5,6 +5,14 @@ local root_dir = vim.fn.fnamemodify("tests/.sessions", ":p")
 ---@type Continuum.Config
 local test_default_opts = {
   root_dir = root_dir,
+  auto_restore_on_branch_change = false,
+  auto_save = false,
+  auto_restore = false,
+  react_on_cwd_change = false,
+  custom_builtin = {
+    codecompanion = false,
+    qf = false,
+  },
 }
 
 Helpers.root_dir = root_dir
@@ -95,14 +103,13 @@ Helpers.expect.equality_partial_tbl = MiniTest.new_expectation(
 ---@param plugin_opts Continuum.Config
 ---@param cwd? string
 Helpers.new_child_neovim = function(plugin_opts, cwd)
-  generator.generate_config(vim.tbl_deep_extend("force", test_default_opts, plugin_opts), cwd)
-
   local child = MiniTest.new_child_neovim()
   local args = { "-u", "tests/minit_generated.lua" }
 
   local manager = {
     ---@param extra_args? table<string>
     start = function(extra_args)
+      generator.generate_config(vim.tbl_deep_extend("force", test_default_opts, plugin_opts), cwd)
       local start_args = vim.deepcopy(args)
       if extra_args then
         for _, v in ipairs(extra_args) do
