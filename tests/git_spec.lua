@@ -15,27 +15,3 @@ T["can parse git host"] = function()
 end
 
 return T
-
--- local child = MiniTest.new_child_neovim()
---
--- local T = MiniTest.new_set({
---   hooks = {
---     pre_case = function()
---       child.restart({ "-l", "tests/minit.lua" })
---       child.lua([[M = require('continuum.git')]])
---     end,
---     post_once = child.stop,
---   },
--- })
---
--- T["can parse git host"] = function()
---   child.fn.system = function()
---     return "hahahha"
---   end
---   -- print(child.fn.system("test"))
---   print(child.lua("return M.repo_path()"))
---
---   MiniTest.expect.equality(child.lua("return M.repo_host()"), "aa")
--- end
---
--- return T

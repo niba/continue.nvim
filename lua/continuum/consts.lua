@@ -1,3 +1,4 @@
+local system = require("continuum.utils.system")
 local M = {}
 
 M.PLUGIN_NAME = "continuum"
@@ -7,6 +8,10 @@ M.PICKER_TITLE = "Sessions"
 
 function M.enable_pager_mode()
   M.PAGER_MODE = true
+end
+
+function M.get_pager_mode()
+  return M.PAGER_MODE or system.is_pager_mode()
 end
 
 return M

@@ -31,8 +31,8 @@ function M.call_shell(command, log_level)
   return result, nil
 end
 
-function M.non_standard_mode()
-  return vim.g.in_pager_mode
+function M.is_pager_mode()
+  return vim.g.in_pager_mode == 1
 end
 
 return M

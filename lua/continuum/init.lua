@@ -13,13 +13,10 @@ local lsp = require("continuum.lsp")
 local picker = require("continuum.pickers.picker")
 
 ---@param force_branch_name? string
-local function get_session_data(force_branch_name)
+local function get_session_name(force_branch_name)
   local opts = config.options
-  local session_name = sessions.get_name(opts, force_branch_name)
-
-  local session_dir = fs.join_paths(opts.root_dir, session_name)
-
-  return session_dir, session_name
+  local session_name = sessions.get_name(config.options, force_branch_name)
+  return session_name
 end
 
 ---@class Continuum.core
@@ -46,7 +43,7 @@ function M.setup(cfg)
     consts.enable_pager_mode()
   end
 
-  if consts.PAGER_MODE then
+  if consts.get_pager_mode() then
     return
   end
 
@@ -59,38 +56,38 @@ function M.setup(cfg)
   if config.options.react_on_cwd_change then
     events.on_cwd_change({
       condition = function()
-        if consts.PAGER_MODE then
+        if consts.get_pager_mode() then
           logger.info("Detected pager mode, stopping auto restore")
           return false
         end
         return true
       end,
       before_change = function()
-        M.save(get_session_data())
+        M.save()
       end,
       after_change = function()
-        M.load(get_session_data())
+        M.load()
       end,
     })
   end
 
   events.on_start(function()
     if config.options.auto_restore then
-      if consts.PAGER_MODE then
+      if consts.get_pager_mode() then
         -- TODO: change to debug later
         logger.info("Detected pager mode, stopping auto restore")
         return
       end
 
-      M.load(get_session_data())
+      M.load()
     end
 
     picker.init_pickers()
 
     if config.options.auto_restore_on_branch_change and git.is_git_repo() then
       git.watch_branch_changes(function(old_branch_name)
-        M.save(get_session_data(old_branch_name))
-        M.load(get_session_data())
+        M.save(sessions.get_name(config.options, old_branch_name))
+        M.load()
       end)
       logger.debug("Watching branch changes")
     end
@@ -98,7 +95,7 @@ function M.setup(cfg)
 
   if config.options.auto_save then
     events.on_end(function()
-      if consts.PAGER_MODE then
+      if consts.get_pager_mode() then
         logger.info("Detected pager mode, stopping auto save")
         return
       end
@@ -107,7 +104,7 @@ function M.setup(cfg)
         return
       end
 
-      M.save(get_session_data())
+      M.save()
       logger.destroy()
     end)
   else
@@ -117,24 +114,34 @@ function M.setup(cfg)
   end
 end
 
-function M.reset() end
+---@param session_name? string
+function M.delete(session_name)
+  session_name = session_name or sessions.get_name(config.options)
+  local session_path = fs.join_paths(config.options.root_dir, session_name)
 
----@param session_path string
----@param session_name string
-function M.save(session_path, session_name)
-  logger.debug("Saving session for cwd [%s] with name [%s]", vim.fn.getcwd(), session_name)
-  local start_time = os.time()
-  fs.create_dir(session_path)
-  sessions.save(session_path)
-  local end_time = os.time()
-  local elapsed = end_time - start_time
-  logger.info("testttt")
-  logger.info("Session [%s] has been saved, time: %d seconds", session_name, elapsed)
+  sessions.delete(session_path, session_name)
 end
 
----@param session_path string
----@param session_name string
-function M.load(session_path, session_name)
+---@param session_name? string
+function M.save(session_name)
+  session_name = session_name or sessions.get_name(config.options)
+  local session_path = fs.join_paths(config.options.root_dir, session_name)
+
+  local start_time = os.time()
+
+  fs.create_dir(session_path)
+  sessions.save(session_path)
+
+  local end_time = os.time()
+  local elapsed = end_time - start_time
+  logger.debug("Session [%s] has been saved, time: %d seconds", session_name, elapsed)
+end
+
+---@param session_name? string
+function M.load(session_name)
+  session_name = session_name or sessions.get_name(config.options)
+  local session_path = fs.join_paths(config.options.root_dir, session_name)
+
   if not fs.dir_exists(session_path) then
     logger.debug(
       "Loading session stopped. There is no data for cwd [%s] and session name [%s]",
@@ -160,6 +167,4 @@ function M.search(opts)
   sessions.search(opts and opts.picker or "snacks")
 end
 
--- :Lazy reload continuum
--- lua require("continuum").setup()
 return M
