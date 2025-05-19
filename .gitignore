@@ -1,2 +1,3 @@
 .tests
 tests/.sessions
+tests/projects/git/.git_dir/logs/

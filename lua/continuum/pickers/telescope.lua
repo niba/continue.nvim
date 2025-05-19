@@ -25,6 +25,9 @@ function M.pick(opts)
     item.ordinal = item.text
     item.display = item.text
 
+    -- -@field value any
+    -- -@field text string
+    -- -@field path? string
     return item
   end
 
@@ -48,6 +51,14 @@ function M.pick(opts)
     end)
   end
 
+  local function save_as_action()
+    local selection = require("telescope.actions").get_selected_entry()
+
+    if selection then
+      return opts.actions.save_as.handler(selection)
+    end
+  end
+
   local telescope_conf = require("telescope.config").values
   local telescope_actions = require("telescope.actions")
   local telescope_state = require("telescope.actions.state")
@@ -59,10 +70,12 @@ function M.pick(opts)
       sorter = telescope_conf.file_sorter(opts),
       attach_mappings = function(prompt_bufnr, map)
         map(opts.actions.delete.mode, opts.actions.delete.key, delete_action)
+        map(opts.actions.save_as.mode, opts.actions.save_as.key, save_as_action)
 
         telescope_actions.select_default:replace(function()
           telescope_actions.close(prompt_bufnr)
           local selection = telescope_state.get_selected_entry()
+          print(vim.inspect(selection))
           opts.actions.confirm(selection)
         end)
         return true

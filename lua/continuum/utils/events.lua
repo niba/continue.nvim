@@ -104,7 +104,7 @@ function M.on_start(fn)
 end
 
 function M.on_end(fn)
-  vim.api.nvim_create_autocmd({ "VimLeavePre" }, {
+  local group_id = vim.api.nvim_create_autocmd({ "VimLeavePre" }, {
     pattern = "*",
     callback = function()
       fn()
@@ -112,6 +112,10 @@ function M.on_end(fn)
     group = augroup,
     once = true,
   })
+
+  return function()
+    pcall(vim.api.nvim_del_autocmd, group_id)
+  end
 end
 
 return M

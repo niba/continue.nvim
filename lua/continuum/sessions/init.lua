@@ -8,7 +8,6 @@ local consts = require("continuum.consts")
 local mks = require("continuum.sessions.mks")
 local shada = require("continuum.sessions.shada")
 local custom = require("continuum.sessions.custom")
-local picker = require("continuum.pickers.picker")
 
 local session_providers = {
   mks,
@@ -28,8 +27,9 @@ function M.load(session_path)
   for _, provider in ipairs(session_providers) do
     pcall(function()
       provider.load({
-        project_path = fs.join_paths(session_path, provider.file),
-        global_path = fs.join_paths(config.options.root_dir, provider.file),
+        project_data_path = fs.join_paths(session_path, provider.file),
+        global_data_path = fs.join_paths(config.options.root_dir, provider.file),
+        project_root = M.get_project_root(config.options),
       })
     end)
   end
@@ -40,8 +40,9 @@ function M.save(session_path)
   for _, provider in ipairs(session_providers) do
     pcall(function()
       provider.save({
-        project_path = fs.join_paths(session_path, provider.file),
-        global_path = fs.join_paths(config.options.root_dir, provider.file),
+        project_data_path = fs.join_paths(session_path, provider.file),
+        global_data_path = fs.join_paths(config.options.root_dir, provider.file),
+        project_root = M.get_project_root(config.options),
       })
     end)
   end
@@ -98,8 +99,6 @@ function M.list(opts)
     if vim.fn.isdirectory(entry) ~= 0 then
       local dir_name = vim.fn.fnamemodify(entry, ":t") -- Get directory name
       local decoded_name = M.decode_name(dir_name)
-
-      logger.info("pattern %s follow project name: %s", pattern, decoded_name.project)
 
       if string.sub(decoded_name.project, 1, #pattern) == pattern then
         table.insert(sessions, {
@@ -178,40 +177,13 @@ function M.get_name(opts, force_git_branch)
   return name
 end
 
----@param opts? Continuum.SearchOpts
-function M.search(opts)
-  picker.pick({
-    title = consts.PICKER_TITLE,
-    preview = false,
-    get_data = function()
-      local data = M.list(opts)
+---@param opts { use_git_host?: boolean; }
+function M.get_project_root(opts)
+  if opts.use_git_host then
+    return git.get_git_project_root() or vim.fn.getcwd()
+  end
 
-      return vim
-        .iter(data)
-        :map(function(session)
-          return {
-            text = M.display(session),
-            value = session,
-            path = session.path,
-          }
-        end)
-        :totable()
-    end,
-    actions = {
-      confirm = {
-        handler = function(item)
-          M.load(item.path)
-        end,
-      },
-      delete = {
-        handler = function(item)
-          M.delete(item.path, item.value.name)
-        end,
-        mode = config.options.mappings.delete_session[1],
-        key = config.options.mappings.delete_session[2],
-      },
-    },
-  }, opts and opts.picker or nil)
+  return vim.fn.getcwd()
 end
 
 return M

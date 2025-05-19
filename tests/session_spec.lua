@@ -100,6 +100,11 @@ T["should detect pager mode"] = function()
 end
 
 T["should load sessions data"] = function()
+  -- do nothing when no session
+  child.lua_func(function()
+    require("continuum").load()
+  end)
+
   local buffer_name = child.lua_func(function()
     vim.cmd("edit file.txt")
     local current_buf = vim.api.nvim_get_current_buf()

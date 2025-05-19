@@ -8,16 +8,8 @@ local sessions = require("continuum.sessions")
 local events = require("continuum.utils.events")
 local config = require("continuum.config")
 local utils = require("continuum.utils")
-local lsp = require("continuum.lsp")
 
 local picker = require("continuum.pickers.picker")
-
----@param force_branch_name? string
-local function get_session_name(force_branch_name)
-  local opts = config.options
-  local session_name = sessions.get_name(config.options, force_branch_name)
-  return session_name
-end
 
 ---@class Continuum.core
 local M = {}
@@ -30,7 +22,7 @@ function M.setup(cfg)
     adapters = {
       {
         name = adapters.ADAPTER_TYPES.notifier,
-        level = vim.log.levels.WARN,
+        level = vim.log.levels.INFO,
       },
       {
         name = adapters.ADAPTER_TYPES.file,
@@ -57,7 +49,7 @@ function M.setup(cfg)
     events.on_cwd_change({
       condition = function()
         if consts.get_pager_mode() then
-          logger.info("Detected pager mode, stopping auto restore")
+          logger.debug("Detected pager mode, stopping auto restore")
           return false
         end
         return true
@@ -94,24 +86,61 @@ function M.setup(cfg)
     end
   end)
 
-  if config.options.auto_save then
-    events.on_end(function()
-      if consts.get_pager_mode() then
-        logger.info("Detected pager mode, stopping auto save")
-        return
-      end
-      if utils.buffers_count() < config.options.auto_save_min_buffer then
-        logger.info("Not enough buffers loaded to auto save")
-        return
-      end
+  M.toggle_auto_save(config.options.auto_save)
 
-      M.save()
-      logger.destroy()
-    end)
+  local cmds = require("continuum.commands")
+  for _, cmd in ipairs(cmds) do
+    vim.api.nvim_create_user_command(cmd.cmd, cmd.callback, cmd.opts)
+  end
+
+  events.on_end(function()
+    logger.destroy()
+  end)
+
+  vim.schedule(function()
+    picker.init_pickers()
+  end)
+end
+
+local auto_save_trigger = nil
+---@param force_state? boolean
+function M.toggle_auto_save(force_state)
+  if force_state == nil then
+    config.options.auto_save = not config.options.auto_save
   else
-    events.on_end(function()
-      logger.destroy()
-    end)
+    config.options.auto_save = force_state
+  end
+
+  local auto_save = config.options.auto_save
+
+  if auto_save and auto_save_trigger then
+    return
+  end
+
+  if not auto_save and not auto_save_trigger then
+    return
+  end
+
+  local auto_save_cb = function()
+    if consts.get_pager_mode() then
+      logger.debug("Detected pager mode, stopping auto save")
+      return
+    end
+    if utils.buffers_count() < config.options.auto_save_min_buffer then
+      logger.debug("Not enough buffers loaded to auto save")
+      return
+    end
+
+    M.save()
+  end
+
+  if auto_save and not auto_save_trigger then
+    auto_save_trigger = events.on_end(auto_save_cb)
+  end
+
+  if not auto_save and auto_save_trigger then
+    auto_save_trigger()
+    auto_save_trigger = nil
   end
 end
 
@@ -152,22 +181,17 @@ function M.load(session_name)
     return
   end
 
-  -- most lsp clients auto attach so we only need to care about stopping it
-  -- lsp.stop_lsp()
   logger.debug("Loading session for cwd [%s] with name [%s]", vim.fn.getcwd(), session_name)
   local start_time = os.time()
   sessions.load(session_path)
   local end_time = os.time()
   local elapsed = end_time - start_time
   logger.info("Session %s has been loaded, time: %d seconds", session_name, elapsed)
-  -- lsp.stop_lsp()
 end
 
 ---@param opts? Continuum.SearchOpts
 function M.search(opts)
-  picker.init_pickers()
-
-  sessions.search({
+  picker.sessions({
     all = opts and opts.all or false,
     picker = opts and opts.picker or config.options.picker,
   })

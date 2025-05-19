@@ -45,7 +45,7 @@ function M.save(session_opts)
   for handler_name, handler in pairs(handlers) do
     if handler.save then
       local success, handler_data = pcall(function()
-        return handler.save()
+        return handler.save(session_opts)
       end)
       if not success then
         logger.error("Error while saving custom session data: %s", handler_data)
@@ -68,13 +68,13 @@ function M.save(session_opts)
     end
   end
 
-  return fs.write_json_file(session_opts.project_path, handlers_data)
+  return fs.write_json_file(session_opts.project_data_path, handlers_data)
 end
 
 ---@param session_opts SessionOpts
 function M.load(session_opts)
   local success, data = pcall(function()
-    return fs.read_json_file(session_opts.project_path)
+    return fs.read_json_file(session_opts.project_data_path)
   end)
 
   if not success then
@@ -91,7 +91,7 @@ function M.load(session_opts)
     local handler = handlers[key]
     if handler and handler.load then
       pcall(function()
-        handler.load(value)
+        handler.load(value, session_opts)
       end)
     end
   end

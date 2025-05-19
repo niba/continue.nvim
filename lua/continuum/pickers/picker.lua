@@ -1,6 +1,9 @@
 local telescope_picker = require("continuum.pickers.telescope")
 local snacks_picker = require("continuum.pickers.snacks")
 local select_picker = require("continuum.pickers.select")
+local consts = require("continuum.consts")
+local config = require("continuum.config")
+local sessions = require("continuum.sessions")
 
 local pickers = {
   telescope = telescope_picker,
@@ -24,6 +27,7 @@ local M = {}
 
 ---@class Continuum.PickerActions
 ---@field confirm Continuum.PickerKeymap
+---@field save_as Continuum.PickerKeymap
 ---@field delete Continuum.PickerKeymap
 ---@field [string] Continuum.PickerKeymap
 
@@ -63,6 +67,50 @@ function M.init_pickers()
   end)
 end
 
-return M
+M.supported_pickers = { "snacks", "telescope", "select" }
 
--- ["<c-a>"] = { "select_all", mode = { "n", "i" } },
+---@param opts? Continuum.SearchOpts
+function M.sessions(opts)
+  M.pick({
+    title = consts.PICKER_TITLE,
+    preview = false,
+    get_data = function()
+      local data = sessions.list(opts)
+
+      return vim
+        .iter(data)
+        :map(function(session)
+          return {
+            text = sessions.display(session),
+            value = session,
+            path = session.path,
+          }
+        end)
+        :totable()
+    end,
+    actions = {
+      confirm = {
+        handler = function(item)
+          sessions.load(item.path)
+        end,
+      },
+      save_as = {
+        handler = function(item)
+          sessions.save(item.path)
+          vim.notify("Session saved", vim.log.levels.INFO)
+        end,
+        mode = config.options.mappings.save_as_session[1],
+        key = config.options.mappings.save_as_session[2],
+      },
+      delete = {
+        handler = function(item)
+          sessions.delete(item.path, item.value.name)
+        end,
+        mode = config.options.mappings.delete_session[1],
+        key = config.options.mappings.delete_session[2],
+      },
+    },
+  }, opts and opts.picker or nil)
+end
+
+return M

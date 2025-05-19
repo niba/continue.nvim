@@ -33,6 +33,7 @@ function M.pick(opts)
       input = {
         keys = {
           [opts.actions.delete.key] = { "delete", mode = opts.actions.delete.mode },
+          [opts.actions.save_as.key] = { "save_as", mode = opts.actions.save_as.mode },
           ["dd"] = "delete",
         },
       },
@@ -47,6 +48,11 @@ function M.pick(opts)
         picker:close()
         vim.schedule(function()
           opts.actions.confirm.handler(item)
+        end)
+      end,
+      save_as = function(picker, item)
+        vim.schedule(function()
+          opts.actions.save_as.handler(item)
         end)
       end,
       delete = function(picker, item)

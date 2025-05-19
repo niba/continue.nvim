@@ -1,7 +1,8 @@
 
 ---@class SessionOpts
----@field project_path string
----@field global_path string
+---@field project_data_path string
+---@field global_data_path string
+---@field project_root string
 ---
 ---@class Continuum.BuiltinCustom
 ---@field qf boolean
@@ -26,6 +27,8 @@
 ---
 ---@class Continuum.Config.Mappings
 ---@field delete_session? table
+---@field save_as_session? table
+
 ---@class Continuum.Config.Shada
 ---@field project? string
 ---@field global? string

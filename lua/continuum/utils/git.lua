@@ -29,6 +29,17 @@ function M.is_git_repo(cb)
   system.call_shell_cb({ "git", "rev-parse", "--is-inside-work-tree" }, cb)
 end
 
+function M.get_git_project_root()
+  local project_dir = vim.trim(vim.fn.system("git rev-parse --show-toplevel"))
+
+  if vim.v.shell_error ~= 0 or project_dir == "" then
+    logger.debug("Failed to get git project directory.  Error code: %d", vim.v.shell_error)
+    return nil
+  end
+
+  return project_dir
+end
+
 ---@param remote_name string
 ---@return string|nil
 function M.repo_host(remote_name)
