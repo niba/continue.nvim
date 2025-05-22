@@ -9,7 +9,7 @@ require("lazy.minit").setup({
     "nvim-lua/plenary.nvim",
     {
       dir = vim.uv.cwd(),
-      ---@type Continuum.Config
+      ---@type Continue.Config
       opts = {
         auto_restore = false,
         auto_save = false,

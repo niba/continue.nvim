@@ -1,4 +1,4 @@
----@class Continuum.PickerModule
+---@class Continue.PickerModule
 local M = {}
 
 M.name = "telescope"
@@ -13,14 +13,14 @@ function M.register()
 
   M.enabled = true
 
-  telescope.load_extension("continuum")
+  telescope.load_extension("continue")
 end
 
----@param opts Continuum.PickerOpts
+---@param opts Continue.PickerOpts
 function M.pick(opts)
   local telescope_finders = require("telescope.finders")
 
-  ---@param item Continuum.PickerItem
+  ---@param item Continue.PickerItem
   local entry_maker = function(item)
     item.ordinal = item.text
     item.display = item.text

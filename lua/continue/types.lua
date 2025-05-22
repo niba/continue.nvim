@@ -4,11 +4,11 @@
 ---@field global_data_path string
 ---@field project_root string
 ---
----@class Continuum.BuiltinCustom
+---@class Continue.BuiltinCustom
 ---@field qf boolean
 ---@field codecompanion boolean
 ---
----@class Continuum.Config
+---@class Continue.Config
 ---@field use_git_branch? boolean
 ---@field use_git_host? boolean
 ---@field auto_restore? boolean
@@ -18,38 +18,38 @@
 ---@field auto_restore_on_branch_change? boolean
 ---@field log_level? integer
 ---@field picker? "telescope" | "snacks" | "select"
----@field mappings? Continuum.Config.Mappings
----@field custom_builtin? Continuum.BuiltinCustom
----@field custom? table<Continuum.CustomHandler>
----@field shada? Continuum.Config.Shada
+---@field mappings? Continue.Config.Mappings
+---@field custom_builtin? Continue.BuiltinCustom
+---@field custom? table<Continue.CustomHandler>
+---@field shada? Continue.Config.Shada
 ---@field root_dir? string
 ---@field git_remote? string | fun(cwd: string): string
 ---
----@class Continuum.Config.Mappings
+---@class Continue.Config.Mappings
 ---@field delete_session? table
 ---@field save_as_session? table
 
----@class Continuum.Config.Shada
+---@class Continue.Config.Shada
 ---@field project? string
 ---@field global? string
 
----@class Continuum.PickerData
+---@class Continue.PickerData
 ---@field base string
 ---@field branch string
 ---@field name string
 ---@field path string
 ---
----@class Continuum.PickerModule
+---@class Continue.PickerModule
 ---@field register function
 ---@field enabled boolean
 ---@field pick function
 ---@field name string
 ---
----@class Continuum.SearchOpts
+---@class Continue.SearchOpts
 ---@field all? boolean
 ---@field picker? "telescope" | "snacks" | "select"
 
----@class Continuum.CustomHandler
+---@class Continue.CustomHandler
 ---@field load function
 ---@field save function
 ---@field condition function
@@ -57,7 +57,7 @@
 ---@field config any
 ---@field id string
 ---
----@class Continuum.OnCwdChange
+---@class Continue.OnCwdChange
 ---@field before_change function
 ---@field after_change function
 ---@field condition function

@@ -1,4 +1,4 @@
----@class Continuum.PickerModule
+---@class Continue.PickerModule
 local M = {}
 
 M.name = "snacks"
@@ -16,7 +16,7 @@ function M.register()
   M.enabled = true
 end
 
----@param opts Continuum.PickerOpts
+---@param opts Continue.PickerOpts
 function M.pick(opts)
   local layout = opts.layout and opts.layout
     or opts.preview == false and { preset = "select" }

@@ -1,5 +1,5 @@
-local system = require("continuum.utils.system")
-local logger = require("continuum.logger.logger")
+local system = require("continue.utils.system")
+local logger = require("continue.logger.logger")
 local M = {}
 
 M.file = "data.vim"

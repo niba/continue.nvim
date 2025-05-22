@@ -1,5 +1,5 @@
 local path = require("plenary.path")
-local logger = require("continuum.logger.logger")
+local logger = require("continue.logger.logger")
 
 local M = {}
 

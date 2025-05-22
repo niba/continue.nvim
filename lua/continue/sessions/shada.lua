@@ -1,5 +1,5 @@
-local system = require("continuum.utils.system")
-local config = require("continuum.config")
+local system = require("continue.utils.system")
+local config = require("continue.config")
 local M = {}
 
 M.file = "data.shada"

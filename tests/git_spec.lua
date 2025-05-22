@@ -1,5 +1,5 @@
-local git = require("continuum.utils.git")
-local encoding = require("continuum.utils.encoding")
+local git = require("continue.utils.git")
+local encoding = require("continue.utils.encoding")
 local MiniTest = require("mini.test")
 local h = require("tests_helpers.helpers")
 
@@ -62,8 +62,8 @@ T["generate session name using git data"] = function()
   manager.start()
 
   local session_name = child.lua_func(function()
-    local config = require("continuum.config")
-    return require("continuum.sessions").get_name(config.options)
+    local config = require("continue.config")
+    return require("continue.sessions").get_name(config.options)
   end)
 
   -- use git branch in session name
@@ -80,8 +80,8 @@ T["generate session name using git data"] = function()
   })
 
   session_name = child.lua_func(function()
-    local config = require("continuum.config")
-    return require("continuum.sessions").get_name(config.options)
+    local config = require("continue.config")
+    return require("continue.sessions").get_name(config.options)
   end)
 
   -- don't use git branch in session name
@@ -90,8 +90,8 @@ T["generate session name using git data"] = function()
   call_cmd({ "git", "remote", "add", "test", "https://github.com/niba/test-repo.git" })
 
   session_name = child.lua_func(function()
-    local config = require("continuum.config")
-    return require("continuum.sessions").get_name(config.options)
+    local config = require("continue.config")
+    return require("continue.sessions").get_name(config.options)
   end)
 
   -- use remote in name
@@ -104,8 +104,8 @@ T["generate session name using git data"] = function()
   })
 
   session_name = child.lua_func(function()
-    local config = require("continuum.config")
-    return require("continuum.sessions").get_name(config.options)
+    local config = require("continue.config")
+    return require("continue.sessions").get_name(config.options)
   end)
 
   -- dont use remote in name
@@ -122,7 +122,7 @@ T["should change session when change branch"] = function()
   })
   child.lua_func(function()
     vim.cmd("edit file.txt")
-    require("continuum").save()
+    require("continue").save()
   end)
   manager.stop()
 
@@ -132,7 +132,7 @@ T["should change session when change branch"] = function()
   })
   child.lua_func(function()
     vim.cmd("edit testfile.txt")
-    require("continuum").save()
+    require("continue").save()
   end)
   manager.stop()
 
@@ -145,7 +145,7 @@ T["should change session when change branch"] = function()
   vim.loop.sleep(500)
 
   local buffer_name = child.lua_func(function()
-    require("continuum").load()
+    require("continue").load()
     local current_buf = vim.api.nvim_get_current_buf()
     local file_path = vim.api.nvim_buf_get_name(current_buf)
     local filename = vim.fn.fnamemodify(file_path, ":t")

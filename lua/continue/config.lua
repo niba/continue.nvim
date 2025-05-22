@@ -1,12 +1,12 @@
-local utils = require("continuum.utils")
-local logger = require("continuum.logger.logger")
-local git = require("continuum.utils.git")
-local fs = require("continuum.utils.fs")
-local consts = require("continuum.consts")
+local utils = require("continue.utils")
+local logger = require("continue.logger.logger")
+local git = require("continue.utils.git")
+local fs = require("continue.utils.fs")
+local consts = require("continue.consts")
 
 local M = {}
 
----@class Continuum.Config
+---@class Continue.Config
 M.default = {
   auto_restore = true,
   auto_save = true,
@@ -34,7 +34,7 @@ M.default = {
   custom = {},
 }
 
----@type Continuum.Config
+---@type Continue.Config
 M.options = {}
 
 function M.setup(opts)

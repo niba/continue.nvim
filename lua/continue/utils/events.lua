@@ -1,11 +1,11 @@
-local consts = require("continuum.consts")
-local logger = require("continuum.logger.logger")
+local consts = require("continue.consts")
+local logger = require("continue.logger.logger")
 
-local ecosystem = require("continuum.utils.ecosystem")
+local ecosystem = require("continue.utils.ecosystem")
 
 local M = {}
 
-local augroup = vim.api.nvim_create_augroup("continuum", { clear = true })
+local augroup = vim.api.nvim_create_augroup("continue", { clear = true })
 
 function M.register_commands()
   vim.api.nvim_create_autocmd({ "StdinReadPre" }, {
@@ -19,7 +19,7 @@ function M.register_commands()
 end
 
 local CWD_LOCK = false
----@param callbacks Continuum.OnCwdChange
+---@param callbacks Continue.OnCwdChange
 function M.on_cwd_change(callbacks)
   vim.api.nvim_create_autocmd("DirChangedPre", {
     pattern = "global",

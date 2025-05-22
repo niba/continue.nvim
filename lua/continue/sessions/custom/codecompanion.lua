@@ -1,4 +1,4 @@
----@class Continuum.CustomHandler
+---@class Continue.CustomHandler
 local M = {}
 
 M.id = "codecompanion"

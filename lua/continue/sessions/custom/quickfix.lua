@@ -1,5 +1,5 @@
-local logger = require("continuum.logger.logger")
----@class Continuum.CustomHandler
+local logger = require("continue.logger.logger")
+---@class Continue.CustomHandler
 local M = {}
 
 M.id = "quickfix"

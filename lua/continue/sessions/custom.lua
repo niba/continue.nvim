@@ -1,7 +1,7 @@
-local logger = require("continuum.logger.logger")
-local fs = require("continuum.utils.fs")
-local custom_qf = require("continuum.sessions.custom.quickfix")
-local custom_cc = require("continuum.sessions.custom.codecompanion")
+local logger = require("continue.logger.logger")
+local fs = require("continue.utils.fs")
+local custom_qf = require("continue.sessions.custom.quickfix")
+local custom_cc = require("continue.sessions.custom.codecompanion")
 local M = {}
 
 M.file = "data.json"
@@ -11,10 +11,10 @@ local builtin = {
   codecompanion = custom_cc,
 }
 
----@type table<string, Continuum.CustomHandler>
+---@type table<string, Continue.CustomHandler>
 local handlers = {}
 
----@param handler Continuum.CustomHandler
+---@param handler Continue.CustomHandler
 function M.register(handler)
   handlers[handler.id] = {
     load = handler.load,
@@ -24,7 +24,7 @@ function M.register(handler)
   }
 end
 
----@param opts Continuum.Config
+---@param opts Continue.Config
 function M.init(opts)
   for key, value in pairs(opts.custom_builtin or {}) do
     if value and builtin[key].condition() then

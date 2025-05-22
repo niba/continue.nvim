@@ -6,7 +6,7 @@ local plugins = {
     "stevearc/oil.nvim",
   },
   {
-    "continuum",
+    "continue",
     dev = true,
     dependencies = {
       { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },

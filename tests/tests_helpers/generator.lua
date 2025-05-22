@@ -13,7 +13,7 @@ require("lazy.minit").setup({
     "nvim-lua/plenary.nvim",
     {
       dir = plugin_dir,
-      name = "continuum",
+      name = "continue",
       lazy = false,
       config = true,
       opts = {{opts}},

@@ -1,7 +1,7 @@
-local utils = require("continuum.utils")
-local system = require("continuum.utils.system")
-local logger = require("continuum.logger.logger")
-local fs = require("continuum.utils.fs")
+local utils = require("continue.utils")
+local system = require("continue.utils.system")
+local logger = require("continue.logger.logger")
+local fs = require("continue.utils.fs")
 local M = {}
 
 ---@return string|nil

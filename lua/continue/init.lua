@@ -1,20 +1,20 @@
-require("continuum.types")
-local logger = require("continuum.logger.logger")
-local consts = require("continuum.consts")
-local adapters = require("continuum.logger.adapters")
-local fs = require("continuum.utils.fs")
-local git = require("continuum.utils.git")
-local sessions = require("continuum.sessions")
-local events = require("continuum.utils.events")
-local config = require("continuum.config")
-local utils = require("continuum.utils")
+require("continue.types")
+local logger = require("continue.logger.logger")
+local consts = require("continue.consts")
+local adapters = require("continue.logger.adapters")
+local fs = require("continue.utils.fs")
+local git = require("continue.utils.git")
+local sessions = require("continue.sessions")
+local events = require("continue.utils.events")
+local config = require("continue.config")
+local utils = require("continue.utils")
 
-local picker = require("continuum.pickers.picker")
+local picker = require("continue.pickers.picker")
 
----@class Continuum.core
+---@class Continue.core
 local M = {}
 
----@param cfg Continuum.Config
+---@param cfg Continue.Config
 function M.setup(cfg)
   logger.new({
     prefix = consts.PLUGIN_NAME,
@@ -88,7 +88,7 @@ function M.setup(cfg)
 
   M.toggle_auto_save(config.options.auto_save)
 
-  local cmds = require("continuum.commands")
+  local cmds = require("continue.commands")
   for _, cmd in ipairs(cmds) do
     vim.api.nvim_create_user_command(cmd.cmd, cmd.callback, cmd.opts)
   end
@@ -189,7 +189,7 @@ function M.load(session_name)
   logger.info("Session %s has been loaded, time: %d seconds", session_name, elapsed)
 end
 
----@param opts? Continuum.SearchOpts
+---@param opts? Continue.SearchOpts
 function M.search(opts)
   picker.sessions({
     all = opts and opts.all or false,

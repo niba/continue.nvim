@@ -1,9 +1,9 @@
-local telescope_picker = require("continuum.pickers.telescope")
-local snacks_picker = require("continuum.pickers.snacks")
-local select_picker = require("continuum.pickers.select")
-local consts = require("continuum.consts")
-local config = require("continuum.config")
-local sessions = require("continuum.sessions")
+local telescope_picker = require("continue.pickers.telescope")
+local snacks_picker = require("continue.pickers.snacks")
+local select_picker = require("continue.pickers.select")
+local consts = require("continue.consts")
+local config = require("continue.config")
+local sessions = require("continue.sessions")
 
 local pickers = {
   telescope = telescope_picker,
@@ -12,35 +12,35 @@ local pickers = {
 }
 
 local M = {}
----@alias Continuum.SupportedPickers "telescope" | "snacks" | "mini" | "fzf" | "native"
+---@alias Continue.SupportedPickers "telescope" | "snacks" | "mini" | "fzf" | "native"
 
----@class Continuum.PickerItem
+---@class Continue.PickerItem
 ---@field [string] any
 ---@field value any
 ---@field text string
 ---@field path? string
 
----@class Continuum.PickerKeymap
+---@class Continue.PickerKeymap
 ---@field key string
 ---@field mode? any
----@field handler fun(item: Continuum.PickerItem): any
+---@field handler fun(item: Continue.PickerItem): any
 
----@class Continuum.PickerActions
----@field confirm Continuum.PickerKeymap
----@field save_as Continuum.PickerKeymap
----@field delete Continuum.PickerKeymap
----@field [string] Continuum.PickerKeymap
+---@class Continue.PickerActions
+---@field confirm Continue.PickerKeymap
+---@field save_as Continue.PickerKeymap
+---@field delete Continue.PickerKeymap
+---@field [string] Continue.PickerKeymap
 
----@class Continuum.PickerOpts
----@field get_data fun(opts?: any): Continuum.PickerItem[]
----@field actions Continuum.PickerActions
+---@class Continue.PickerOpts
+---@field get_data fun(opts?: any): Continue.PickerItem[]
+---@field actions Continue.PickerActions
 ---@field title string
 ---@field layout any
 ---@field preview boolean
 ---
 ---
----@param opts Continuum.PickerOpts
----@param force_picker Continuum.SupportedPickers
+---@param opts Continue.PickerOpts
+---@param force_picker Continue.SupportedPickers
 function M.pick(opts, force_picker)
   if force_picker then
     pickers[force_picker].pick(opts)
@@ -69,7 +69,7 @@ end
 
 M.supported_pickers = { "snacks", "telescope", "select" }
 
----@param opts? Continuum.SearchOpts
+---@param opts? Continue.SearchOpts
 function M.sessions(opts)
   M.pick({
     title = consts.PICKER_TITLE,

@@ -2,7 +2,7 @@ local generator = require("tests_helpers.generator")
 local Helpers = {}
 
 local root_dir = vim.fn.fnamemodify("tests/.sessions", ":p")
----@type Continuum.Config
+---@type Continue.Config
 local test_default_opts = {
   root_dir = root_dir,
   auto_restore_on_branch_change = false,
@@ -100,7 +100,7 @@ Helpers.expect.equality_partial_tbl = MiniTest.new_expectation(
   end
 )
 
----@param plugin_opts Continuum.Config
+---@param plugin_opts Continue.Config
 ---@param cwd? string
 Helpers.new_child_neovim = function(plugin_opts, cwd)
   local child = MiniTest.new_child_neovim()
@@ -121,7 +121,7 @@ Helpers.new_child_neovim = function(plugin_opts, cwd)
     stop = function()
       child.stop()
     end,
-    ---@param new_plugin_opts? Continuum.Config
+    ---@param new_plugin_opts? Continue.Config
     ---@param extra_args? table<string>
     restart = function(new_plugin_opts, extra_args)
       local start_args = vim.deepcopy(args)
@@ -136,11 +136,11 @@ Helpers.new_child_neovim = function(plugin_opts, cwd)
       end
       child.restart(start_args)
     end,
-    ---@param new_plugin_opts Continuum.Config
+    ---@param new_plugin_opts Continue.Config
     reload_plugin = function(new_plugin_opts)
       return child.lua_func(function(new_opts)
-        require("lazy.core.config").plugins["continuum"].opts = new_opts
-        require("lazy").reload({ plugins = { "continuum" } })
+        require("lazy.core.config").plugins["continue"].opts = new_opts
+        require("lazy").reload({ plugins = { "continue" } })
       end, vim.tbl_deep_extend("force", test_default_opts, plugin_opts, new_plugin_opts))
     end,
   }

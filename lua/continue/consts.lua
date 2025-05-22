@@ -1,7 +1,7 @@
-local system = require("continuum.utils.system")
+local system = require("continue.utils.system")
 local M = {}
 
-M.PLUGIN_NAME = "continuum"
+M.PLUGIN_NAME = "continue"
 M.SPECIAL_SEPARATOR = "__"
 M.PAGER_MODE = false
 M.PICKER_TITLE = "Sessions"

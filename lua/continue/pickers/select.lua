@@ -1,4 +1,4 @@
----@class Continuum.PickerModule
+---@class Continue.PickerModule
 local M = {}
 
 M.name = "select"
@@ -8,7 +8,7 @@ function M.register()
   M.enabled = true
 end
 
----@param opts Continuum.PickerOpts
+---@param opts Continue.PickerOpts
 function M.pick(opts)
   local data = opts.get_data()
 

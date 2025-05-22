@@ -11,7 +11,7 @@ require("lazy.minit").setup({
     "nvim-lua/plenary.nvim",
     {
       dir = plugin_dir,
-      name = "continuum",
+      name = "continue",
       lazy = false,
       config = true,
       opts = {
@@ -23,7 +23,7 @@ require("lazy.minit").setup({
     qf = false
   },
   react_on_cwd_change = false,
-  root_dir = "/Users/niba/Documents/Projects/neovim/continuum/tests/.sessions/"
+  root_dir = "/Users/niba/Documents/Projects/neovim/continue/tests/.sessions/"
 },
     },
   },

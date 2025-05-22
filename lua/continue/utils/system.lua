@@ -1,4 +1,4 @@
-local logger = require("continuum.logger.logger")
+local logger = require("continue.logger.logger")
 local M = {}
 
 ---@param command string

@@ -1,13 +1,13 @@
-local git = require("continuum.utils.git")
-local utils = require("continuum.utils")
-local config = require("continuum.config")
-local encoding = require("continuum.utils.encoding")
-local logger = require("continuum.logger.logger")
-local fs = require("continuum.utils.fs")
-local consts = require("continuum.consts")
-local mks = require("continuum.sessions.mks")
-local shada = require("continuum.sessions.shada")
-local custom = require("continuum.sessions.custom")
+local git = require("continue.utils.git")
+local utils = require("continue.utils")
+local config = require("continue.config")
+local encoding = require("continue.utils.encoding")
+local logger = require("continue.logger.logger")
+local fs = require("continue.utils.fs")
+local consts = require("continue.consts")
+local mks = require("continue.sessions.mks")
+local shada = require("continue.sessions.shada")
+local custom = require("continue.sessions.custom")
 
 local session_providers = {
   mks,
@@ -48,7 +48,7 @@ function M.save(session_path)
   end
 end
 
----@param opts Continuum.Config
+---@param opts Continue.Config
 function M.init(opts)
   for _, provider in ipairs(session_providers) do
     if type(provider.init) == "function" then
@@ -86,7 +86,7 @@ function M.delete(path, name)
 end
 
 ---@param opts? { all?: boolean }
----@return Continuum.PickerData[]
+---@return Continue.PickerData[]
 function M.list(opts)
   local scan = vim.fn.globpath(config.options.root_dir, "*", 0, 1)
   local sessions = {}
@@ -124,7 +124,7 @@ function M.decode_name(name)
   }
 end
 
----@param data Continuum.PickerData
+---@param data Continue.PickerData
 ---@return string
 function M.display(data)
   if data.branch then

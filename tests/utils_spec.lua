@@ -1,7 +1,7 @@
 local MiniTest = require("mini.test")
 local h = require("tests_helpers.helpers")
-local encoding = require("continuum.utils.encoding")
-local utils = require("continuum.utils")
+local encoding = require("continue.utils.encoding")
+local utils = require("continue.utils")
 
 local T = MiniTest.new_set()
 
@@ -65,7 +65,7 @@ T["should return buffer count"] = function()
     vim.cmd("edit file.txt")
     vim.cmd("edit file2.txt")
 
-    return require("continuum.utils").buffers_count()
+    return require("continue.utils").buffers_count()
   end)
 
   MiniTest.expect.equality(buffer_count, 2)
@@ -77,7 +77,7 @@ T["should detect file argument"] = function()
   manager.start({ "tests/projects/basic/file.txt" })
 
   local file_argument = child.lua_func(function()
-    return require("continuum.utils").has_file_as_argument()
+    return require("continue.utils").has_file_as_argument()
   end)
 
   MiniTest.expect.equality(file_argument, true)
@@ -85,7 +85,7 @@ T["should detect file argument"] = function()
   manager.restart()
 
   file_argument = child.lua_func(function()
-    return require("continuum.utils").has_file_as_argument()
+    return require("continue.utils").has_file_as_argument()
   end)
 
   MiniTest.expect.equality(file_argument, false)

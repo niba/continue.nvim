@@ -18,7 +18,7 @@ local T = MiniTest.new_set({
 
 T["should load with minimal config"] = function()
   local plugin_loaded = child.lua_func(function()
-    return type(require("continuum")) == "table"
+    return type(require("continue")) == "table"
   end)
 
   MiniTest.expect.equality(plugin_loaded, true)
@@ -58,7 +58,7 @@ end
 
 T["should create sessions data"] = function()
   child.lua_func(function()
-    require("continuum").save()
+    require("continue").save()
   end)
 
   local dirs = h.get_existing_sessions_dirs()
@@ -67,11 +67,11 @@ end
 
 T["should delete sessions data"] = function()
   child.lua_func(function()
-    require("continuum").save()
+    require("continue").save()
     vim.schedule(function()
       vim.fn.feedkeys("y" .. vim.api.nvim_replace_termcodes("<CR>", true, false, true), "t")
     end)
-    require("continuum").delete()
+    require("continue").delete()
   end)
 
   local dirs = h.get_existing_sessions_dirs()
@@ -80,7 +80,7 @@ end
 
 T["should create sessions data with custom name"] = function()
   child.lua_func(function()
-    require("continuum").save("test_name")
+    require("continue").save("test_name")
   end)
 
   local dirs = h.get_existing_sessions_dirs()
@@ -93,7 +93,7 @@ T["should detect pager mode"] = function()
   manager.start({ "tests/projects/basic/file.txt" })
 
   local pager_mode = child.lua_func(function()
-    return require("continuum.consts").get_pager_mode()
+    return require("continue.consts").get_pager_mode()
   end)
 
   MiniTest.expect.equality(pager_mode, true)
@@ -102,7 +102,7 @@ end
 T["should load sessions data"] = function()
   -- do nothing when no session
   child.lua_func(function()
-    require("continuum").load()
+    require("continue").load()
   end)
 
   local buffer_name = child.lua_func(function()
@@ -116,7 +116,7 @@ T["should load sessions data"] = function()
   MiniTest.expect.equality(buffer_name, "file.txt")
 
   buffer_name = child.lua_func(function()
-    require("continuum").save()
+    require("continue").save()
     vim.cmd("bufdo bdelete!")
     local current_buf = vim.api.nvim_get_current_buf()
     local file_path = vim.api.nvim_buf_get_name(current_buf)
@@ -127,7 +127,7 @@ T["should load sessions data"] = function()
   MiniTest.expect.equality(buffer_name, "")
 
   buffer_name = child.lua_func(function()
-    require("continuum").load()
+    require("continue").load()
     local current_buf = vim.api.nvim_get_current_buf()
     local file_path = vim.api.nvim_buf_get_name(current_buf)
     local filename = vim.fn.fnamemodify(file_path, ":t")
@@ -140,7 +140,7 @@ end
 T["should auto restore sessions"] = function()
   local buffer_name = child.lua_func(function()
     vim.cmd("edit file.txt")
-    require("continuum").save()
+    require("continue").save()
     local current_buf = vim.api.nvim_get_current_buf()
     local file_path = vim.api.nvim_buf_get_name(current_buf)
     local filename = vim.fn.fnamemodify(file_path, ":t")

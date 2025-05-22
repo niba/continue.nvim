@@ -1,31 +1,31 @@
-local continuum = require("continuum")
-local config = require("continuum.config")
-local logger = require("continuum.logger.logger")
-local picker = require("continuum.pickers.picker")
+local continue = require("continue")
+local config = require("continue.config")
+local logger = require("continue.logger.logger")
+local picker = require("continue.pickers.picker")
 
 return {
   {
-    cmd = "ContinuumSave",
+    cmd = "ContinueSave",
     callback = function(opts)
-      continuum.save()
+      continue.save()
     end,
     opts = {
       desc = "Save session",
     },
   },
   {
-    cmd = "ContinuumLoad",
+    cmd = "ContinueLoad",
     callback = function(opts)
-      continuum.load()
+      continue.load()
     end,
     opts = {
       desc = "Load session",
     },
   },
   {
-    cmd = "ContinuumDelete",
+    cmd = "ContinueDelete",
     callback = function(opts)
-      continuum.delete()
+      continue.delete()
     end,
     opts = {
       desc = "Delete session",
@@ -33,15 +33,15 @@ return {
   },
 
   {
-    cmd = "ContinuumPicker",
+    cmd = "ContinuePicker",
     callback = function(opts)
-      continuum.search({ picker = opts.args })
+      continue.search({ picker = opts.args })
     end,
     opts = {
       desc = "Search current session",
       nargs = "?",
       complete = function(arg_lead, cmdline)
-        if cmdline:match("^ContinuumPicker[!]*%s+%w*$") then
+        if cmdline:match("^ContinuePicker[!]*%s+%w*$") then
           return vim
             .iter(picker.supported_pickers)
             :filter(function(key)
@@ -53,9 +53,9 @@ return {
     },
   },
   {
-    cmd = "ContinuumToggleAutoSave",
+    cmd = "ContinueToggleAutoSave",
     callback = function(opts)
-      continuum.toggle_auto_save()
+      continue.toggle_auto_save()
       vim.notify(
         string.format("%s auto save", config.options.auto_save and "Enabled" or "Disabled"),
         vim.log.levels.INFO
