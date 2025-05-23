@@ -19,7 +19,6 @@
 ---@field log_level? integer
 ---@field picker? "telescope" | "snacks" | "select"
 ---@field mappings? Continue.Config.Mappings
----@field custom_builtin? Continue.BuiltinCustom
 ---@field custom? table<Continue.CustomHandler>
 ---@field shada? Continue.Config.Shada
 ---@field root_dir? string

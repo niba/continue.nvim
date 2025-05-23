@@ -66,7 +66,7 @@ function M.setup(cfg)
   events.on_start(function()
     vim.wait(200, function()
       return not consts.PROCESSING_IS_REPO
-    end, 10)
+    end)
 
     if config.options.auto_restore then
       if consts.get_pager_mode() then

@@ -1,15 +1,8 @@
 local logger = require("continue.logger.logger")
 local fs = require("continue.utils.fs")
-local custom_qf = require("continue.sessions.custom.quickfix")
-local custom_cc = require("continue.sessions.custom.codecompanion")
 local M = {}
 
 M.file = "data.json"
-
-local builtin = {
-  qf = custom_qf,
-  codecompanion = custom_cc,
-}
 
 ---@type table<string, Continue.CustomHandler>
 local handlers = {}
@@ -21,16 +14,13 @@ function M.register(handler)
     save = handler.save,
     config = handler.config,
     id = handler.id,
+    condition = handler.condition,
+    init = handler.init,
   }
 end
 
 ---@param opts Continue.Config
 function M.init(opts)
-  for key, value in pairs(opts.custom_builtin or {}) do
-    if value and builtin[key].condition() then
-      M.register(builtin[key])
-    end
-  end
   for key, value in pairs(opts.custom) do
     if value then
       M.register(value())

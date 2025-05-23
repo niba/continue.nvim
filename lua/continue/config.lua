@@ -27,10 +27,6 @@ M.default = {
     delete_session = { "i", "<C-X>" },
     save_as_session = { "i", "<C-S>" },
   },
-  custom_builtin = {
-    qf = true,
-    codecompanion = false,
-  },
   custom = {},
 }
 
