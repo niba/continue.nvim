@@ -21,6 +21,7 @@
 ---@field mappings? Continue.Config.Mappings
 ---@field custom? table<Continue.CustomHandler>
 ---@field shada? Continue.Config.Shada
+---@field hooks? Continue.Config.Hooks
 ---@field root_dir? string
 ---@field git_remote? string | fun(cwd: string): string
 ---
@@ -28,6 +29,16 @@
 ---@field delete_session? table
 ---@field save_as_session? table
 
+---@class Continue.Config.HookArgs
+---@field cwd_path string
+---@field project_path string
+---
+---@class Continue.Config.Hooks
+---@field pre_save? fun(args: Continue.Config.HookArgs): nil
+---@field post_save? fun(args: Continue.Config.HookArgs): nil
+---@field pre_restore? fun(args: Continue.Config.HookArgs): nil
+---@field post_restore? fun(args: Continue.Config.HookArgs): nil
+---
 ---@class Continue.Config.Shada
 ---@field project? string
 ---@field global? string

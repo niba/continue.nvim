@@ -90,7 +90,25 @@ function M.buffers_count()
   end
 
   return count
+end
 
+function M.truthy(value)
+  if value == nil then
+    return false
+  end
+  if type(value) == "boolean" then
+    return value
+  end
+  if type(value) == "string" then
+    return value > ""
+  end
+  if type(value) == "number" then
+    return value > 0
+  end
+  if type(value) == "table" then
+    return #vim.tbl_values(value) > 0
+  end
+  return true
 end
 
 return M

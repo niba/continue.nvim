@@ -1,6 +1,6 @@
 local consts = require("continue.consts")
 local logger = require("continue.logger.logger")
-
+local utils = require("continue.utils.init")
 local ecosystem = require("continue.utils.ecosystem")
 
 local M = {}
@@ -60,10 +60,39 @@ function M.on_cwd_change(callbacks)
   })
 end
 
+local get_dir_arg = function()
+  local vim_arg = vim.fn.argv(0)
+
+  if not vim_arg or #vim_arg == 0 then
+    return nil
+  end
+
+  local uv = (vim.uv or vim.loop)
+  local stats = uv.fs_stat(vim_arg)
+  if not stats or stats.type ~= "directory" then
+    return nil
+  end
+
+  local bufname = vim.api.nvim_buf_get_name(0)
+  if not utils.truthy(bufname) then
+    bufname = vim_arg or ""
+  end
+  local stats = uv.fs_stat(bufname)
+  if not stats then
+    return nil
+  end
+  if stats.type ~= "directory" then
+    return nil
+  end
+
+  return bufname
+end
+
+---@param fn fun(dir_path?: string): nil
 function M.on_start(fn)
   local defer_fn = function()
     vim.schedule(function()
-      fn()
+      fn(get_dir_arg())
     end)
   end
 
@@ -116,6 +145,14 @@ function M.on_end(fn)
   return function()
     pcall(vim.api.nvim_del_autocmd, group_id)
   end
+end
+
+---Fire an event
+---@param event string
+---@param opts? table
+function M.fire(event, opts)
+  opts = opts or {}
+  vim.api.nvim_exec_autocmds("User", { pattern = consts.PLUGIN_NAME .. event, data = opts })
 end
 
 return M

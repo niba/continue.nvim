@@ -5,6 +5,12 @@ local M = {}
 M.file = "data.vim"
 
 local function remove_cd_from_session(session_file_path)
+  local file_stat = vim.loop.fs_stat(session_file_path)
+  if not file_stat then
+    logger.debug("Session file does not exist: %s", session_file_path)
+    return false
+  end
+
   local file = io.open(session_file_path, "r")
   if not file then
     logger.debug("Error: Could not open session file: %s", session_file_path)
@@ -28,6 +34,8 @@ local function remove_cd_from_session(session_file_path)
   for _, line in ipairs(lines) do
     file:write(line .. "\n")
   end
+
+  file:flush()
   file:close()
 
   return true

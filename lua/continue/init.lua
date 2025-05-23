@@ -48,6 +48,12 @@ function M.setup(cfg)
   if config.options.react_on_cwd_change then
     events.on_cwd_change({
       condition = function()
+        if consts.is_auto_session_disabled_by_option() then
+          logger.debug(
+            "Auto restoring is disabled by option g:auto_continue. Stopping auto restore"
+          )
+          return false
+        end
         if consts.get_pager_mode() then
           logger.debug("Detected pager mode, stopping auto restore")
           return false
@@ -63,15 +69,24 @@ function M.setup(cfg)
     })
   end
 
-  events.on_start(function()
+  events.on_start(function(dir_path)
     vim.wait(200, function()
       return not consts.PROCESSING_IS_REPO
     end)
 
+    if consts.is_auto_session_disabled_by_option() then
+      logger.debug("Auto restoring is disabled by option g:auto_continue. Stopping auto restore")
+      return false
+    end
+    if consts.get_pager_mode() then
+      logger.debug("Detected pager mode, stopping auto restore")
+      return
+    end
+
     if config.options.auto_restore then
-      if consts.get_pager_mode() then
-        logger.debug("Detected pager mode, stopping auto restore")
-        return
+      if dir_path then
+        -- hack to make auto restore work with neo-tree when starting nvim with a directory path
+        vim.cmd("vsplit")
       end
 
       M.load()
@@ -122,6 +137,10 @@ function M.toggle_auto_save(force_state)
   end
 
   local auto_save_cb = function()
+    if consts.is_auto_session_disabled_by_option() then
+      logger.debug("Auto saving is disabled by option g:auto_continue")
+      return
+    end
     if consts.get_pager_mode() then
       logger.debug("Detected pager mode, stopping auto save")
       return

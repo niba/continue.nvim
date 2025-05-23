@@ -28,6 +28,7 @@ M.default = {
     save_as_session = { "i", "<C-S>" },
   },
   custom = {},
+  hooks = {},
 }
 
 ---@type Continue.Config

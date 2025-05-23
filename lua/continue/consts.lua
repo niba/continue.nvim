@@ -16,4 +16,8 @@ function M.get_pager_mode()
   return M.PAGER_MODE or system.is_pager_mode()
 end
 
+function M.is_auto_session_disabled_by_option()
+  return vim.g.auto_continue == false
+end
+
 return M

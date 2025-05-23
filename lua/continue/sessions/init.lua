@@ -19,30 +19,68 @@ local M = {}
 
 ---@param session_path string
 function M.load(session_path)
-  -- TODO: do we need to reset ui?
+  local project_root = M.get_project_root(config.options)
+
+  if config.options.hooks and config.options.hooks.pre_restore then
+    pcall(function()
+      config.options.hooks.pre_restore({
+        project_path = project_root,
+        cwd_path = vim.fn.getcwd(),
+      })
+    end)
+  end
+
   vim.cmd([[silent! tabonly!]])
   vim.cmd([[silent! %bd!]])
   vim.cmd([[silent! %bw!]])
+
 
   for _, provider in ipairs(session_providers) do
     pcall(function()
       provider.load({
         project_data_path = fs.join_paths(session_path, provider.file),
         global_data_path = fs.join_paths(config.options.root_dir, provider.file),
-        project_root = M.get_project_root(config.options),
+        project_root = project_root,
       })
     end)
   end
+
+  pcall(function()
+    config.options.hooks.post_restore({
+      project_path = project_root,
+      cwd_path = vim.fn.getcwd(),
+    })
+  end)
 end
 
 ---@param session_path string
 function M.save(session_path)
+  local project_root = M.get_project_root(config.options)
+
+  if config.options.hooks and config.options.hooks.pre_save then
+    pcall(function()
+      config.options.hooks.pre_save({
+        project_path = project_root,
+        cwd_path = vim.fn.getcwd(),
+      })
+    end)
+  end
+
   for _, provider in ipairs(session_providers) do
     pcall(function()
       provider.save({
         project_data_path = fs.join_paths(session_path, provider.file),
         global_data_path = fs.join_paths(config.options.root_dir, provider.file),
-        project_root = M.get_project_root(config.options),
+        project_root = project_root,
+      })
+    end)
+  end
+
+  if config.options.hooks and config.options.hooks.post_save then
+    pcall(function()
+      config.options.hooks.post_save({
+        project_path = project_root,
+        cwd_path = vim.fn.getcwd(),
       })
     end)
   end
