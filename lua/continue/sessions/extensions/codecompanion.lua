@@ -1,4 +1,4 @@
----@class Continue.CustomHandler
+---@class Continue.ExtensionHandler
 local M = {}
 
 M.id = "codecompanion"

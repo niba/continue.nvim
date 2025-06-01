@@ -27,7 +27,7 @@ M.default = {
     delete_session = { "i", "<C-X>" },
     save_as_session = { "i", "<C-S>" },
   },
-  custom = {},
+  extensions = {},
   hooks = {},
 }
 

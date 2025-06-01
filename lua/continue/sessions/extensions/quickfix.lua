@@ -1,5 +1,5 @@
 local logger = require("continue.logger.logger")
----@class Continue.CustomHandler
+---@class Continue.ExtensionHandler
 local M = {}
 
 M.id = "quickfix"
@@ -48,13 +48,14 @@ function M.save()
 end
 
 function M.load(data)
+  logger.debug("loading data")
   if not data then
-    logger.info("No quickfix data")
+    logger.debug("No quickfix data")
     return false
   end
 
   if not data.items then
-    logger.info("No quickfix data")
+    logger.debug("No quickfix data")
     return false
   end
 

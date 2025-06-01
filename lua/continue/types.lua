@@ -4,10 +4,6 @@
 ---@field global_data_path string
 ---@field project_root string
 ---
----@class Continue.BuiltinCustom
----@field qf boolean
----@field codecompanion boolean
----
 ---@class Continue.Config
 ---@field use_git_branch? boolean
 ---@field use_git_host? boolean
@@ -19,7 +15,7 @@
 ---@field log_level? integer
 ---@field picker? "telescope" | "snacks" | "select"
 ---@field mappings? Continue.Config.Mappings
----@field custom? table<Continue.CustomHandler>
+---@field extensions? table<Continue.ExtensionHandler>
 ---@field shada? Continue.Config.Shada
 ---@field hooks? Continue.Config.Hooks
 ---@field root_dir? string
@@ -59,7 +55,7 @@
 ---@field all? boolean
 ---@field picker? "telescope" | "snacks" | "select"
 
----@class Continue.CustomHandler
+---@class Continue.ExtensionHandler
 ---@field load function
 ---@field save function
 ---@field condition function

@@ -7,12 +7,12 @@ local fs = require("continue.utils.fs")
 local consts = require("continue.consts")
 local mks = require("continue.sessions.mks")
 local shada = require("continue.sessions.shada")
-local custom = require("continue.sessions.custom")
+local extensions = require("continue.sessions.extensions")
 
 local session_providers = {
   mks,
   shada,
-  custom,
+  extensions,
 }
 
 local M = {}

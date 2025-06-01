@@ -33,7 +33,7 @@ return {
   },
 
   {
-    cmd = "ContinuePicker",
+    cmd = "ContinueSearch",
     callback = function(opts)
       continue.search({ picker = opts.args })
     end,
