@@ -17,17 +17,25 @@ function M.call_cmd(command, log_level)
   return result, nil
 end
 
----@param command string
-function M.call_shell(command)
-  local result = vim.fn.system(command)
-  local exit_code = vim.v.shell_error
-  if exit_code ~= 0 then
-    local error =
-      string.format("Calling [%s] command caused error [%d]: %s", command, exit_code, result)
+---@param command string[]
+---@param timeout? number
+function M.call_shell(command, timeout)
+  local result = vim.system(command, { timeout = timeout or 1000 }):wait()
+
+  local out = result.stdout and vim.trim(result.stdout) or ""
+
+  if result.code ~= 0 or out == "" then
+    local error = string.format(
+      "Calling [%s] command caused error [%d]: %s",
+      command,
+      result.code,
+      result.stderr
+    )
     logger.log(vim.log.levels.DEBUG, error)
-    return nil, error
+    return nil
   end
-  return result, nil
+
+  return out
 end
 
 ---@param command table<string>

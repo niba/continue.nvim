@@ -6,10 +6,9 @@ local M = {}
 
 ---@return string|nil
 function M.repo_path()
-  local git_dir = vim.trim(vim.fn.system("git rev-parse --path-format=absolute --git-dir"))
+  local git_dir = system.call_shell({ "git", "rev-parse", "--path-format=absolute", "--git-dir" })
 
-  if vim.v.shell_error ~= 0 or git_dir == "" then
-    logger.debug("Failed to get Git directory.  Error code: %d", vim.v.shell_error)
+  if not git_dir then
     return nil
   end
 
@@ -30,20 +29,14 @@ function M.is_git_repo(cb)
 end
 
 function M.get_git_project_root()
-  local project_dir = vim.trim(vim.fn.system("git rev-parse --show-toplevel"))
-
-  if vim.v.shell_error ~= 0 or project_dir == "" then
-    logger.debug("Failed to get git project directory.  Error code: %d", vim.v.shell_error)
-    return nil
-  end
-
-  return project_dir
+  return system.call_shell({ "git", "rev-parse", "--show-toplevel" })
 end
 
 ---@param remote_name string
 ---@return string|nil
 function M.repo_host(remote_name)
-  local url = vim.trim(vim.fn.system(string.format("git config --get remote.%s.url", remote_name)))
+  local url =
+    system.call_shell({ "git", "config", "--get", string.format("remote.%s.url", remote_name) })
   if not url or url == "" or string.match(url, "^fatal:") then
     return nil
   end
@@ -52,7 +45,7 @@ function M.repo_host(remote_name)
 end
 
 function M.repo_branch()
-  local branch_name = vim.trim(vim.fn.system("git branch --show-current"))
+  local branch_name = system.call_shell({ "git", "branch", "--show-current" })
   if not branch_name or branch_name == "" or string.match(branch_name, "fatal:") then
     return nil
   end
@@ -82,7 +75,10 @@ end
 ---@param cb function
 function M.watch_branch_changes(cb)
   local watcher = utils.is_windows() and vim.uv.new_fs_poll() or vim.uv.new_fs_event()
-  local git_dir = vim.trim(vim.fn.system("git rev-parse --path-format=absolute --git-dir"))
+  local git_dir = system.call_shell({ "git", "rev-parse", "--path-format=absolute", "--git-dir" })
+  if not git_dir then
+    return
+  end
   local git_head = fs.join_paths(git_dir, "HEAD")
 
   local function read_head_branch()

@@ -15,12 +15,16 @@ require("lazy.minit").setup({
       lazy = false,
       config = true,
       opts = {
-        auto_restore = false,
-        auto_restore_on_branch_change = false,
-        auto_save = false,
-        react_on_cwd_change = false,
-        root_dir = "/Users/niba/Documents/Projects/neovim/continue/tests/.sessions/",
-      },
+  auto_restore = false,
+  auto_restore_on_branch_change = false,
+  auto_save = false,
+  custom = {
+    codecompanion = <function 1>,
+    qf = <function 2>
+  },
+  react_on_cwd_change = false,
+  root_dir = "/Users/niba/Documents/Projects/neovim/continue/tests/.sessions/"
+},
     },
   },
 })

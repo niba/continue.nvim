@@ -34,7 +34,6 @@ function M.load(session_path)
   vim.cmd([[silent! %bd!]])
   vim.cmd([[silent! %bw!]])
 
-
   for _, provider in ipairs(session_providers) do
     pcall(function()
       provider.load({
@@ -90,7 +89,9 @@ end
 function M.init(opts)
   for _, provider in ipairs(session_providers) do
     if type(provider.init) == "function" then
-      provider.init(opts)
+      pcall(function()
+        provider.init(opts)
+      end)
     end
   end
 end
