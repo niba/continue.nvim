@@ -1,4 +1,5 @@
 .tests
 tests/.sessions
+tests/minit_generated.lua
 tests/projects/git/.git_dir/logs/
 deps

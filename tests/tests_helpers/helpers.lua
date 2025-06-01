@@ -9,14 +9,6 @@ local test_default_opts = {
   auto_save = false,
   auto_restore = false,
   react_on_cwd_change = false,
-  custom = {
-    qf = function()
-      return require("continue.sessions.custom.quickfix")
-    end,
-    codecompanion = function()
-      return require("continue.sessions.custom.codecompanion")
-    end,
-  },
 }
 
 Helpers.root_dir = root_dir

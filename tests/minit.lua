@@ -7,7 +7,6 @@ load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/ma
 require("lazy.minit").setup({
   spec = {
     "nvim-lua/plenary.nvim",
-    "echasnovski/mini.doc",
     {
       dir = vim.uv.cwd(),
       ---@type Continue.Config

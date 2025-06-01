@@ -163,6 +163,8 @@ T["should change session when change branch"] = function()
   end)
   MiniTest.expect.equality(buffer_name, "testfile.txt")
   manager.stop()
+
+  call_cmd({ "git", "checkout", "main" })
 end
 
 return T
