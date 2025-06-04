@@ -53,7 +53,7 @@ end
 function M.write_json_file(file_path, data)
   local file = io.open(file_path, "w")
   if not file then
-    return false
+    error("Cannot write to file")
   end
   local content = vim.json.encode(data)
   file:write(content)
@@ -66,7 +66,7 @@ end
 function M.read_json_file(file_path)
   local file = io.open(file_path, "r")
   if not file then
-    return nil
+    error("Cannot open file")
   end
   local content = file:read("*a")
   file:close()

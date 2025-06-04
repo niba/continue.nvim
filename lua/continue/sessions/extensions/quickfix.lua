@@ -1,8 +1,12 @@
 local logger = require("continue.logger.logger")
----@class Continue.ExtensionHandler
+---@class Continue.Extension
 local M = {}
 
 M.id = "quickfix"
+
+function M.enabled()
+  return true
+end
 
 local function is_quickfix_open()
   for _, win in pairs(vim.fn.getwininfo()) do
@@ -11,10 +15,6 @@ local function is_quickfix_open()
     end
   end
   return false
-end
-
-function M.condition()
-  return true
 end
 
 function M.save()
@@ -48,16 +48,35 @@ function M.save()
 end
 
 function M.load(data)
-  logger.debug("loading data")
   if not data then
-    logger.debug("No quickfix data")
     return false
   end
 
   if not data.items then
-    logger.debug("No quickfix data")
     return false
   end
+
+  local function delete_all_quickfix_buffers()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      local name = vim.api.nvim_buf_get_name(buf)
+      if name:match("quickfix%-%d+$") then
+        vim.api.nvim_buf_delete(buf, { force = true })
+      end
+    end
+  end
+
+  local function close_all_quickfix_windows()
+    for _, win in pairs(vim.fn.getwininfo()) do
+      if win.quickfix == 1 then
+        vim.api.nvim_win_close(win.winid, false)
+      end
+    end
+  end
+
+  delete_all_quickfix_buffers()
+  close_all_quickfix_windows()
+
+  vim.fn.setqflist({}, "f")
 
   local qf_items = {}
   for _, item in ipairs(data.items) do
@@ -77,15 +96,14 @@ function M.load(data)
     nr = data.nr or 0,
   })
 
-  if not is_quickfix_open() then
-    local current_win = vim.api.nvim_get_current_win()
-    vim.cmd("copen")
+  local current_win = vim.api.nvim_get_current_win()
+  vim.cmd("copen")
 
-    if data.height then
-      vim.cmd(string.format("resize %d", data.height))
-    end
-    vim.api.nvim_set_current_win(current_win)
+  if data.height then
+    vim.cmd(string.format("resize %d", data.height))
   end
+
+  vim.api.nvim_set_current_win(current_win)
 end
 
 return M

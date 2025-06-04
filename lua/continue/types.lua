@@ -15,7 +15,7 @@
 ---@field log_level? integer
 ---@field picker? "telescope" | "snacks" | "select"
 ---@field mappings? Continue.Config.Mappings
----@field extensions? table<Continue.ExtensionHandler>
+---@field extensions? table<Continue.Extension>
 ---@field shada? Continue.Config.Shada
 ---@field hooks? Continue.Config.Hooks
 ---@field root_dir? string
@@ -55,14 +55,12 @@
 ---@field all? boolean
 ---@field picker? "telescope" | "snacks" | "select"
 
----@class Continue.ExtensionHandler
----@field load function
----@field save function
----@field condition function
----@field init function
----@field config any
+---@class Continue.Extension
 ---@field id string
----
+---@field load fun(data: table<string, any>, opts: SessionOpts): nil
+---@field save fun(opts: SessionOpts): table<string, any>
+---@field enabled? fun(opts: SessionOpts): boolean
+
 ---@class Continue.OnCwdChange
 ---@field before_change function
 ---@field after_change function

@@ -1,11 +1,9 @@
----@class Continue.ExtensionHandler
+---@class Continue.Extension
 local M = {}
 
 M.id = "codecompanion"
 
-function M.init(opts) end
-
-function M.condition()
+function M.enabled()
   local success, module = pcall(require, "codecompanion")
 
   return success and module
