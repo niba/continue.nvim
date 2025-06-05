@@ -21,7 +21,7 @@ M.default = {
   picker = "snacks",
   git_remote = "origin",
   shada = {
-    project = "'100,<50,s10,h,:0,/1000",
+    project = "'100,<50,s10,h,:0,/1000,f50",
     global = "!,'0,<0,s10,h,:1000,/0,f0",
   },
   mappings = {
