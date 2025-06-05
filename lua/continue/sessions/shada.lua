@@ -39,14 +39,12 @@ function M.load(session_opts)
   vim.fn.histdel("search")
   vim.cmd("delmarks!")
   clear_all_registers()
-  vim.o.shada = config.options.shada.global
-  system.call_cmd("rshada!" .. session_opts.global_data_path)
-  system.call_cmd("clearjumps")
-  vim.fn.histdel("search")
-  vim.cmd("delmarks!")
-  clear_all_registers()
+
   vim.o.shada = config.options.shada.project
   system.call_cmd("rshada!" .. session_opts.project_data_path)
+
+  vim.o.shada = config.options.shada.global
+  system.call_cmd("rshada" .. session_opts.global_data_path)
   vim.o.shada = ""
 end
 
