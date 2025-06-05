@@ -25,7 +25,7 @@ function M.load(session_path)
     pcall(function()
       config.options.hooks.pre_restore({
         project_path = project_root,
-        cwd_path = vim.fn.getcwd(),
+        cwd_path = vim.uv.cwd(),
       })
     end)
   end
@@ -47,7 +47,7 @@ function M.load(session_path)
   pcall(function()
     config.options.hooks.post_restore({
       project_path = project_root,
-      cwd_path = vim.fn.getcwd(),
+      cwd_path = vim.uv.cwd(),
     })
   end)
 end
@@ -60,7 +60,7 @@ function M.save(session_path)
     pcall(function()
       config.options.hooks.pre_save({
         project_path = project_root,
-        cwd_path = vim.fn.getcwd(),
+        cwd_path = vim.uv.cwd(),
       })
     end)
   end
@@ -79,7 +79,7 @@ function M.save(session_path)
     pcall(function()
       config.options.hooks.post_save({
         project_path = project_root,
-        cwd_path = vim.fn.getcwd(),
+        cwd_path = vim.uv.cwd(),
       })
     end)
   end
@@ -191,7 +191,7 @@ function M.get_base_name(opts)
     end
   end
 
-  local root_path = git.repo_path() or vim.fn.getcwd()
+  local root_path = git.repo_path() or vim.uv.cwd()
   return root_path
 end
 
@@ -219,10 +219,10 @@ end
 ---@param opts { use_git_host?: boolean; }
 function M.get_project_root(opts)
   if opts.use_git_host then
-    return git.get_git_project_root() or vim.fn.getcwd()
+    return git.get_git_project_root() or vim.uv.cwd()
   end
 
-  return vim.fn.getcwd()
+  return vim.uv.cwd()
 end
 
 return M

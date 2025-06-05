@@ -194,13 +194,13 @@ function M.load(session_name)
   if not fs.dir_exists(session_path) then
     logger.debug(
       "Loading session stopped. There is no data for cwd [%s] and session name [%s]",
-      vim.fn.getcwd(),
+      vim.uv.cwd(),
       session_name
     )
     return
   end
 
-  logger.debug("Loading session for cwd [%s] with name [%s]", vim.fn.getcwd(), session_name)
+  logger.debug("Loading session for cwd [%s] with name [%s]", vim.uv.cwd(), session_name)
   local start_time = os.time()
   sessions.load(session_path)
   local end_time = os.time()

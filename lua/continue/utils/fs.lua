@@ -66,11 +66,20 @@ end
 function M.read_json_file(file_path)
   local file = io.open(file_path, "r")
   if not file then
-    error("Cannot open file")
+    error("file_error")
   end
   local content = file:read("*a")
   file:close()
-  return vim.json.decode(content)
+  if not content then
+    error("read_error")
+  end
+
+  local success, result = pcall(vim.json.decode, content)
+  if not success then
+    error("json_error")
+  end
+
+  return result
 end
 
 return M

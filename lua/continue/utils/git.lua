@@ -98,7 +98,7 @@ function M.watch_branch_changes(cb)
   local current_branch = read_head_branch()
 
   if current_branch == nil then
-    logger.debug("Cannot find a head file in the git repository %s", vim.fn.getcwd())
+    logger.debug("Cannot find a head file in the git repository %s", vim.uv.cwd())
     return
   end
 

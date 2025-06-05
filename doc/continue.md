@@ -1,4 +1,4 @@
-# continue.nvim
+## DESCRIPTION
 
 Continue is a session manager for Neovim that lets you pick up exactly where you left off across branches, and paths. It supports shada, git, and custom session extensions, making it the most flexible and robust session solution for modern workflows.
 

@@ -12,10 +12,11 @@ M.default = {
   auto_save = true,
   auto_save_min_buffer = 1,
   auto_restore_on_branch_change = true,
+
   react_on_cwd_change = false,
   use_git_branch = true,
   use_git_host = true,
-  log_level = vim.log.levels.DEBUG,
+  log_level = vim.log.levels.WARN,
   root_dir = fs.join_paths(vim.fn.stdpath("data"), consts.PLUGIN_NAME),
   picker = "snacks",
   git_remote = "origin",
@@ -46,7 +47,7 @@ function M.setup(opts)
     local forced_options = {}
     if not is_repo then
       if M.options.use_git_branch or M.options.use_git_host then
-        logger.debug("Can't use git features on non git repo: %s", vim.fn.getcwd())
+        logger.debug("Can't use git features on non git repo: %s", vim.uv.cwd())
       end
 
       forced_options.use_git_branch = false

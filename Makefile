@@ -4,11 +4,7 @@ PANVIMDOC_PATH ?= $(or $(PANVIMDOC),deps/panvimdoc)
 test: 
 	./scripts/test
 
-doc:  
-	$(nvim_execs) --headless --noplugin -u ./tests/minit.lua -c "lua require('mini.doc').generate()" -c "qa!"
-
-
-doc2:
+doc:
 	@echo Generating Docs...
 	@pandoc \
 		--metadata="project:continue" \
@@ -21,13 +17,13 @@ doc2:
 		--metadata="ignorerawblocks:true" \
 		--metadata="docmapping:false" \
 		--metadata="docmappingproject:true" \
+		--shift-heading-level-by -1 \
 		--lua-filter $(PANVIMDOC_PATH)/scripts/include-files.lua \
 		--lua-filter $(PANVIMDOC_PATH)/scripts/skip-blocks.lua \
 		-t $(PANVIMDOC_PATH)/scripts/panvimdoc.lua \
 		doc/continue.md \
 		-o doc/continue.txt
 
-
 deps:
 	@mkdir -p deps
-	git clone --filter=blob:none https://github.com/kdheepak/panvimdoc deps/panvimdo€kdc€kd
+	git clone --filter=blob:none https://github.com/kdheepak/panvimdoc deps/panvimdoc

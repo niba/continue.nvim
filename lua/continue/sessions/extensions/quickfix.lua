@@ -19,7 +19,7 @@ end
 
 function M.save()
   if not is_quickfix_open() then
-    return nil
+    return {}
   end
 
   local qf_list = vim.fn.getqflist()
