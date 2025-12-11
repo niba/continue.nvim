@@ -107,7 +107,9 @@ function M.watch_branch_changes(cb)
     watcher:stop()
     if head_branch ~= current_branch then
       logger.debug("Detected branch change from %s to %s", current_branch, head_branch)
-      cb(current_branch)
+      if not vim.startswith(vim.bo.filetype, "octo") then
+        cb(current_branch)
+      end
       current_branch = head_branch
     end
 
